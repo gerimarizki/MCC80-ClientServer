@@ -3,11 +3,8 @@ using System.ComponentModel.DataAnnotations;
 
 namespace API.Models
 {
-    public class Account
+    public class Account : BaseEntity
     {
-
-        public Guid Guid { get; set; }
-
 
         public string Password { get; set; }
 
@@ -23,11 +20,6 @@ namespace API.Models
    
         public DateTime ExpiredTime { get; set; }
 
-
-        public DateTime CreatedDate { get; set; }
-
- 
-        public DateTime ModifiedDate { get; set; }
 
     }
 }

@@ -3,10 +3,8 @@ using System.ComponentModel.DataAnnotations;
 
 namespace API.Models
 {
-    public class Education
+    public class Education : BaseEntity
     {
-        public Guid Guid { get; set; }
-
 
         public string Major { get; set; }
 
@@ -18,12 +16,6 @@ namespace API.Models
 
   
         public Guid UniversityGuid { get; set; }
-
-   
-        public DateTime CreatedDate { get; set; }
-
-        [Required]
-        public DateTime ModifiedDate { get; set; }
 
 
     }
