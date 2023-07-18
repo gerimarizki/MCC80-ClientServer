@@ -11,5 +11,10 @@ namespace API.Models
 
         [Column("role_guid")]
         public Guid RoleGuid { get; set; }
+
+        //Cardinality
+        public Role? Role { get; set; }
+        public Account? Account { get; set; }
+
     }
 }
