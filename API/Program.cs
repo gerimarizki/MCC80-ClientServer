@@ -15,6 +15,7 @@ builder.Services.AddControllers();
 
 // Add repositories to the container.
 builder.Services.AddScoped<IUniversityRepository, UniversityRepository>();
+builder.Services.AddScoped<IEducationRepository, EducationRepository>();
 
 
 
