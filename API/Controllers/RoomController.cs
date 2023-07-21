@@ -1,6 +1,10 @@
 ﻿using API.Contracts;
+using API.DTOs.Rooms;
 using API.Models;
+using API.Services;
+using API.Utilities;
 using Microsoft.AspNetCore.Mvc;
+using System.Net;
 
 namespace API.Controllers
 {
@@ -8,83 +12,143 @@ namespace API.Controllers
     [Route("api/rooms")]
     public class RoomController : ControllerBase
     {
-        private readonly IRoomRepository _roomRepository;
+        private readonly RoomService _service;
 
-        public RoomController(IRoomRepository roomRepository)
+        public RoomController(RoomService service)
         {
-            _roomRepository = roomRepository;
+            _service = service;
         }
 
         [HttpGet]
         public IActionResult GetAll()
         {
-            var result = _roomRepository.GetAll();
-            if (!result.Any())
+            var entities = _service.GetRoom();
+
+            if (entities == null)
             {
-                return NotFound();
+                return NotFound(new HandlerForResponseEntity<GetRoomDto>
+                {
+                    Code = StatusCodes.Status404NotFound,
+                    Status = HttpStatusCode.NotFound.ToString(),
+                    Message = "Data not found"
+                });
             }
 
-            return Ok(result);
+            return Ok(new HandlerForResponseEntity<IEnumerable<GetRoomDto>>
+            {
+                Code = StatusCodes.Status200OK,
+                Status = HttpStatusCode.OK.ToString(),
+                Message = "Data found",
+                Data = entities
+            });
         }
 
         [HttpGet("{guid}")]
         public IActionResult GetByGuid(Guid guid)
         {
-            var result = _roomRepository.GetByGuid(guid);
-            if (result is null)
+            var room = _service.GetRoom(guid);
+            if (room is null)
             {
-                return NotFound();
+                return NotFound(new HandlerForResponseEntity<GetRoomDto>
+                {
+                    Code = StatusCodes.Status404NotFound,
+                    Status = HttpStatusCode.NotFound.ToString(),
+                    Message = "Data not found"
+                });
             }
 
-            return Ok(result);
+            return Ok(new HandlerForResponseEntity<GetRoomDto>
+            {
+                Code = StatusCodes.Status200OK,
+                Status = HttpStatusCode.OK.ToString(),
+                Message = "Data found",
+                Data = room
+            });
         }
 
         [HttpPost]
-        public IActionResult Insert(Room room)
+        public IActionResult Create(NewRoomDto newRoomDto)
         {
-            var result = _roomRepository.Create(room);
-            if (result is null)
+            var createRoom = _service.CreateRoom(newRoomDto);
+            if (createRoom is null)
             {
-                return StatusCode(500, "Error Retrieve from database");
+                return BadRequest(new HandlerForResponseEntity<GetRoomDto>
+                {
+                    Code = StatusCodes.Status400BadRequest,
+                    Status = HttpStatusCode.BadRequest.ToString(),
+                    Message = "Data not created"
+                });
             }
 
-            return Ok(result);
+            return Ok(new HandlerForResponseEntity<GetRoomDto>
+            {
+                Code = StatusCodes.Status200OK,
+                Status = HttpStatusCode.OK.ToString(),
+                Message = "Successfully created",
+                Data = createRoom
+            });
         }
 
         [HttpPut]
-        public IActionResult Update(Room room)
+        public IActionResult Update(UpdateRoomDto updateRoomDto)
         {
-            var check = _roomRepository.GetByGuid(room.Guid);
-            if (check is null)
+            var update = _service.UpdateRoom(updateRoomDto);
+            if (update is -1)
             {
-                return NotFound("Guid is not found");
+                return NotFound(new HandlerForResponseEntity<UpdateRoomDto>
+                {
+                    Code = StatusCodes.Status404NotFound,
+                    Status = HttpStatusCode.NotFound.ToString(),
+                    Message = "Id not found"
+                });
             }
-
-            var result = _roomRepository.Update(room);
-            if (!result)
+            if (update is 0)
             {
-                return StatusCode(500, "Error Retrieve from database");
+                return BadRequest(new HandlerForResponseEntity<UpdateRoomDto>
+                {
+                    Code = StatusCodes.Status500InternalServerError,
+                    Status = HttpStatusCode.InternalServerError.ToString(),
+                    Message = "Check your data"
+                });
             }
-
-            return Ok("Update success");
+            return Ok(new HandlerForResponseEntity<UpdateRoomDto>
+            {
+                Code = StatusCodes.Status200OK,
+                Status = HttpStatusCode.OK.ToString(),
+                Message = "Successfully updated"
+            });
         }
 
         [HttpDelete]
         public IActionResult Delete(Guid guid)
         {
-            var data = _roomRepository.GetByGuid(guid);
-            if (data is null)
+            var delete = _service.DeleteRoom(guid);
+
+            if (delete is -1)
             {
-                return NotFound("Guid is not found");
+                return NotFound(new HandlerForResponseEntity<GetRoomDto>
+                {
+                    Code = StatusCodes.Status404NotFound,
+                    Status = HttpStatusCode.NotFound.ToString(),
+                    Message = "Id not found"
+                });
+            }
+            if (delete is 0)
+            {
+                return BadRequest(new HandlerForResponseEntity<GetRoomDto>
+                {
+                    Code = StatusCodes.Status500InternalServerError,
+                    Status = HttpStatusCode.InternalServerError.ToString(),
+                    Message = "Check connection to database"
+                });
             }
 
-            var result = _roomRepository.Delete(data);
-            if (!result)
+            return Ok(new HandlerForResponseEntity<GetRoomDto>
             {
-                return StatusCode(500, "Error Retrieve from database");
-            }
-
-            return Ok("Delete success");
+                Code = StatusCodes.Status200OK,
+                Status = HttpStatusCode.OK.ToString(),
+                Message = "Successfully deleted"
+            });
         }
     }
 }
