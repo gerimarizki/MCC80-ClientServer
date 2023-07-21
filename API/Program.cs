@@ -27,6 +27,7 @@ builder.Services.AddScoped<IEmployeeRepository, EmployeeRepository>();
 // Add services to the container.
 builder.Services.AddScoped<UniversityService>();
 builder.Services.AddScoped<EducationService>();
+builder.Services.AddScoped<EmployeeService>();
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();

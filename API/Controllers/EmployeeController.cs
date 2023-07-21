@@ -1,6 +1,10 @@
 ﻿using API.Contracts;
+using API.DTOs.Employees;
 using API.Models;
+using API.Services;
+using API.Utilities;
 using Microsoft.AspNetCore.Mvc;
+using System.Net;
 
 namespace API.Controllers
 {
@@ -8,83 +12,143 @@ namespace API.Controllers
     [Route("api/employees")]
     public class EmployeeController : ControllerBase
     {
-        private readonly IEmployeeRepository _employeeRepository;
+        private readonly EmployeeService _service;
 
-        public EmployeeController(IEmployeeRepository employeeRepository)
+        public EmployeeController(EmployeeService service)
         {
-            _employeeRepository = employeeRepository;
+            _service = service;
         }
 
         [HttpGet]
         public IActionResult GetAll()
         {
-            var result = _employeeRepository.GetAll();
-            if (!result.Any())
+            var entities = _service.GetEmployee();
+
+            if (entities == null)
             {
-                return NotFound();
+                return NotFound(new HandlerForResponseEntity<GetEmployeeDto>
+                {
+                    Code = StatusCodes.Status404NotFound,
+                    Status = HttpStatusCode.NotFound.ToString(),
+                    Message = "Data not found"
+                });
             }
 
-            return Ok(result);
+            return Ok(new HandlerForResponseEntity<IEnumerable<GetEmployeeDto>>
+            {
+                Code = StatusCodes.Status200OK,
+                Status = HttpStatusCode.OK.ToString(),
+                Message = "Data found",
+                Data = entities
+            });
         }
 
         [HttpGet("{guid}")]
         public IActionResult GetByGuid(Guid guid)
         {
-            var result = _employeeRepository.GetByGuid(guid);
-            if (result is null)
+            var employee = _service.GetEmployee(guid);
+            if (employee is null)
             {
-                return NotFound();
+                return NotFound(new HandlerForResponseEntity<GetEmployeeDto>
+                {
+                    Code = StatusCodes.Status404NotFound,
+                    Status = HttpStatusCode.NotFound.ToString(),
+                    Message = "Data not found"
+                });
             }
 
-            return Ok(result);
+            return Ok(new HandlerForResponseEntity<GetEmployeeDto>
+            {
+                Code = StatusCodes.Status200OK,
+                Status = HttpStatusCode.OK.ToString(),
+                Message = "Data found",
+                Data = employee
+            });
         }
 
         [HttpPost]
-        public IActionResult Insert(Employee employee)
+        public IActionResult Create(NewEmployeeDto newEmployeeDto)
         {
-            var result = _employeeRepository.Create(employee);
-            if (result is null)
+            var createEmployee = _service.CreateEmployee(newEmployeeDto);
+            if (createEmployee is null)
             {
-                return StatusCode(500, "Error Retrieve from database");
+                return BadRequest(new HandlerForResponseEntity<GetEmployeeDto>
+                {
+                    Code = StatusCodes.Status400BadRequest,
+                    Status = HttpStatusCode.BadRequest.ToString(),
+                    Message = "Data not created"
+                });
             }
 
-            return Ok(result);
+            return Ok(new HandlerForResponseEntity<GetEmployeeDto>
+            {
+                Code = StatusCodes.Status200OK,
+                Status = HttpStatusCode.OK.ToString(),
+                Message = "Successfully created",
+                Data = createEmployee
+            });
         }
 
         [HttpPut]
-        public IActionResult Update(Employee employee)
+        public IActionResult Update(UpdateEmployeeDto updateEmployeeDto)
         {
-            var check = _employeeRepository.GetByGuid(employee.Guid);
-            if (check is null)
+            var update = _service.UpdateEmployee(updateEmployeeDto);
+            if (update is -1)
             {
-                return NotFound("Guid is not found");
+                return NotFound(new HandlerForResponseEntity<UpdateEmployeeDto>
+                {
+                    Code = StatusCodes.Status404NotFound,
+                    Status = HttpStatusCode.NotFound.ToString(),
+                    Message = "Id not found"
+                });
             }
-
-            var result = _employeeRepository.Update(employee);
-            if (!result)
+            if (update is 0)
             {
-                return StatusCode(500, "Error Retrieve from database");
+                return BadRequest(new HandlerForResponseEntity<UpdateEmployeeDto>
+                {
+                    Code = StatusCodes.Status500InternalServerError,
+                    Status = HttpStatusCode.InternalServerError.ToString(),
+                    Message = "Check your data"
+                });
             }
-
-            return Ok("Update success");
+            return Ok(new HandlerForResponseEntity<UpdateEmployeeDto>
+            {
+                Code = StatusCodes.Status200OK,
+                Status = HttpStatusCode.OK.ToString(),
+                Message = "Successfully updated"
+            });
         }
 
         [HttpDelete]
         public IActionResult Delete(Guid guid)
         {
-            var data = _employeeRepository.GetByGuid(guid);
-            if (data is null)
+            var delete = _service.DeleteEmployee(guid);
+
+            if (delete is -1)
             {
-                return NotFound("Guid is not found");
+                return NotFound(new HandlerForResponseEntity<GetEmployeeDto>
+                {
+                    Code = StatusCodes.Status404NotFound,
+                    Status = HttpStatusCode.NotFound.ToString(),
+                    Message = "Id not found"
+                });
+            }
+            if (delete is 0)
+            {
+                return BadRequest(new HandlerForResponseEntity<GetEmployeeDto>
+                {
+                    Code = StatusCodes.Status500InternalServerError,
+                    Status = HttpStatusCode.InternalServerError.ToString(),
+                    Message = "Check connection to database"
+                });
             }
 
-            var result = _employeeRepository.Delete(data);
-            if (!result)
+            return Ok(new HandlerForResponseEntity<GetEmployeeDto>
             {
-                return StatusCode(500, "Error Retrieve from database");
-            }
-
-            return Ok("Delete success");
+                Code = StatusCodes.Status200OK,
+                Status = HttpStatusCode.OK.ToString(),
+                Message = "Successfully deleted"
+            });
         }
     }
 }
