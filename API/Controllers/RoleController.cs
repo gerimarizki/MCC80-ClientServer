@@ -1,6 +1,10 @@
 ﻿using API.Contracts;
+using API.DTOs.Roles;
 using API.Models;
+using API.Services;
+using API.Utilities;
 using Microsoft.AspNetCore.Mvc;
+using System.Net;
 
 namespace API.Controllers
 {
@@ -8,83 +12,143 @@ namespace API.Controllers
     [Route("api/roles")]
     public class RoleController : ControllerBase
     {
-        private readonly IRoleRepository _roleRepository;
+        private readonly RoleService _service;
 
-        public RoleController(IRoleRepository roleRepository)
+        public RoleController(RoleService service)
         {
-            _roleRepository = roleRepository;
+            _service = service;
         }
 
         [HttpGet]
         public IActionResult GetAll()
         {
-            var result = _roleRepository.GetAll();
-            if (!result.Any())
+            var entities = _service.GetRole();
+
+            if (entities == null)
             {
-                return NotFound();
+                return NotFound(new HandlerForResponseEntity<GetRoleDto>
+                {
+                    Code = StatusCodes.Status404NotFound,
+                    Status = HttpStatusCode.NotFound.ToString(),
+                    Message = "Data not found"
+                });
             }
 
-            return Ok(result);
+            return Ok(new HandlerForResponseEntity<IEnumerable<GetRoleDto>>
+            {
+                Code = StatusCodes.Status200OK,
+                Status = HttpStatusCode.OK.ToString(),
+                Message = "Data found",
+                Data = entities
+            });
         }
 
         [HttpGet("{guid}")]
         public IActionResult GetByGuid(Guid guid)
         {
-            var result = _roleRepository.GetByGuid(guid);
-            if (result is null)
+            var role = _service.GetRole(guid);
+            if (role is null)
             {
-                return NotFound();
+                return NotFound(new HandlerForResponseEntity<GetRoleDto>
+                {
+                    Code = StatusCodes.Status404NotFound,
+                    Status = HttpStatusCode.NotFound.ToString(),
+                    Message = "Data not found"
+                });
             }
 
-            return Ok(result);
+            return Ok(new HandlerForResponseEntity<GetRoleDto>
+            {
+                Code = StatusCodes.Status200OK,
+                Status = HttpStatusCode.OK.ToString(),
+                Message = "Data found",
+                Data = role
+            });
         }
 
         [HttpPost]
-        public IActionResult Insert(Role role)
+        public IActionResult Create(NewRoleDto newRoleDto)
         {
-            var result = _roleRepository.Create(role);
-            if (result is null)
+            var createRole = _service.CreateRole(newRoleDto);
+            if (createRole is null)
             {
-                return StatusCode(500, "Error Retrieve from database");
+                return BadRequest(new HandlerForResponseEntity<GetRoleDto>
+                {
+                    Code = StatusCodes.Status400BadRequest,
+                    Status = HttpStatusCode.BadRequest.ToString(),
+                    Message = "Data not created"
+                });
             }
 
-            return Ok(result);
+            return Ok(new HandlerForResponseEntity<GetRoleDto>
+            {
+                Code = StatusCodes.Status200OK,
+                Status = HttpStatusCode.OK.ToString(),
+                Message = "Successfully created",
+                Data = createRole
+            });
         }
 
         [HttpPut]
-        public IActionResult Update(Role role)
+        public IActionResult Update(UpdateRoleDto updateRoleDto)
         {
-            var check = _roleRepository.GetByGuid(role.Guid);
-            if (check is null)
+            var update = _service.UpdateRole(updateRoleDto);
+            if (update is -1)
             {
-                return NotFound("Guid is not found");
+                return NotFound(new HandlerForResponseEntity<UpdateRoleDto>
+                {
+                    Code = StatusCodes.Status404NotFound,
+                    Status = HttpStatusCode.NotFound.ToString(),
+                    Message = "Id not found"
+                });
             }
-
-            var result = _roleRepository.Update(role);
-            if (!result)
+            if (update is 0)
             {
-                return StatusCode(500, "Error Retrieve from database");
+                return BadRequest(new HandlerForResponseEntity<UpdateRoleDto>
+                {
+                    Code = StatusCodes.Status500InternalServerError,
+                    Status = HttpStatusCode.InternalServerError.ToString(),
+                    Message = "Check your data"
+                });
             }
-
-            return Ok("Update success");
+            return Ok(new HandlerForResponseEntity<UpdateRoleDto>
+            {
+                Code = StatusCodes.Status200OK,
+                Status = HttpStatusCode.OK.ToString(),
+                Message = "Successfully updated"
+            });
         }
 
         [HttpDelete]
         public IActionResult Delete(Guid guid)
         {
-            var data = _roleRepository.GetByGuid(guid);
-            if (data is null)
+            var delete = _service.DeleteRole(guid);
+
+            if (delete is -1)
             {
-                return NotFound("Guid is not found");
+                return NotFound(new HandlerForResponseEntity<GetRoleDto>
+                {
+                    Code = StatusCodes.Status404NotFound,
+                    Status = HttpStatusCode.NotFound.ToString(),
+                    Message = "Id not found"
+                });
+            }
+            if (delete is 0)
+            {
+                return BadRequest(new HandlerForResponseEntity<GetRoleDto>
+                {
+                    Code = StatusCodes.Status500InternalServerError,
+                    Status = HttpStatusCode.InternalServerError.ToString(),
+                    Message = "Check connection to database"
+                });
             }
 
-            var result = _roleRepository.Delete(data);
-            if (!result)
+            return Ok(new HandlerForResponseEntity<GetRoleDto>
             {
-                return StatusCode(500, "Error Retrieve from database");
-            }
-
-            return Ok("Delete success");
+                Code = StatusCodes.Status200OK,
+                Status = HttpStatusCode.OK.ToString(),
+                Message = "Successfully deleted"
+            });
         }
     }
 }
