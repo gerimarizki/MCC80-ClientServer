@@ -1,7 +1,11 @@
 ﻿using API.Contracts;
+using API.DTOs.Universities;
 using API.Models;
 using API.Repositories;
+using API.Services;
+using API.Utilities;
 using Microsoft.AspNetCore.Mvc;
+using System.Net;
 
 namespace API.Controllers
 {
@@ -9,83 +13,143 @@ namespace API.Controllers
     [Route("api/univerities")]
     public class UniversityController : ControllerBase
     {
-        private readonly IUniversityRepository _universityRepository;
+        private readonly UniversityService _service;
 
-        public UniversityController(IUniversityRepository universityRepository)
+        public UniversityController(UniversityService service)
         {
-            _universityRepository = universityRepository;
+            _service = service;
         }
 
         [HttpGet]
         public IActionResult GetAll()
         {
-            var result = _universityRepository.GetAll();
-            if (!result.Any())
+            var entities = _service.GetUniversity();
+
+            if (!entities.Any())
             {
-                return NotFound();
+                return NotFound(new HandlerForResponseEntity<GetUniversityDto>
+                {
+                    Code = StatusCodes.Status404NotFound,
+                    Status = HttpStatusCode.NotFound.ToString(),
+                    Message = "Data not found"
+                });
             }
 
-            return Ok(result);
+            return Ok(new HandlerForResponseEntity<IEnumerable<GetUniversityDto>>
+            {
+                Code = StatusCodes.Status200OK,
+                Status = HttpStatusCode.OK.ToString(),
+                Message = "Data found",
+                Data = entities
+            });
         }
 
         [HttpGet("{guid}")]
         public IActionResult GetByGuid(Guid guid)
         {
-            var result = _universityRepository.GetByGuid(guid);
-            if (result is null)
+            var university = _service.GetUniversity(guid);
+            if (university is null)
             {
-                return NotFound();
+                return NotFound(new HandlerForResponseEntity<GetUniversityDto>
+                {
+                    Code = StatusCodes.Status404NotFound,
+                    Status = HttpStatusCode.NotFound.ToString(),
+                    Message = "Data not found"
+                });
             }
 
-            return Ok(result);
+            return Ok(new HandlerForResponseEntity<GetUniversityDto>
+            {
+                Code = StatusCodes.Status200OK,
+                Status = HttpStatusCode.OK.ToString(),
+                Message = "Data found",
+                Data = university
+            });
         }
 
         [HttpPost]
-        public IActionResult Insert(University university)
+        public IActionResult Create(NewUniversityDto newUniversityDto)
         {
-            var result = _universityRepository.Create(university);
-            if (result is null)
+            var createdUniversity = _service.CreateUniversity(newUniversityDto);
+            if (createdUniversity is null)
             {
-                return StatusCode(500, "Error Retrieve from database");
+                return BadRequest(new HandlerForResponseEntity<GetUniversityDto>
+                {
+                    Code = StatusCodes.Status400BadRequest,
+                    Status = HttpStatusCode.BadRequest.ToString(),
+                    Message = "Data not created"
+                });
             }
 
-            return Ok(result);
+            return Ok(new HandlerForResponseEntity<GetUniversityDto>
+            {
+                Code = StatusCodes.Status200OK,
+                Status = HttpStatusCode.OK.ToString(),
+                Message = "Successfully created",
+                Data = createdUniversity
+            });
         }
 
         [HttpPut]
-        public IActionResult Update(University university)
+        public IActionResult Update(UpdateUniversityDto updateUniversityDto)
         {
-            var check = _universityRepository.GetByGuid(university.Guid);
-            if (check is null)
+            var update = _service.UpdateUniversity(updateUniversityDto);
+            if (update is -1)
             {
-                return NotFound("Guid is not found");
+                return NotFound(new HandlerForResponseEntity<UpdateUniversityDto>
+                {
+                    Code = StatusCodes.Status404NotFound,
+                    Status = HttpStatusCode.NotFound.ToString(),
+                    Message = "Id not found"
+                });
             }
-
-            var result = _universityRepository.Update(university);
-            if (!result)
+            if (update is 0)
             {
-                return StatusCode(500, "Error Retrieve from database");
+                return BadRequest(new HandlerForResponseEntity<UpdateUniversityDto>
+                {
+                    Code = StatusCodes.Status500InternalServerError,
+                    Status = HttpStatusCode.InternalServerError.ToString(),
+                    Message = "Check your data"
+                });
             }
-
-            return Ok("Update success");
+            return Ok(new HandlerForResponseEntity<UpdateUniversityDto>
+            {
+                Code = StatusCodes.Status200OK,
+                Status = HttpStatusCode.OK.ToString(),
+                Message = "Successfully updated"
+            });
         }
 
         [HttpDelete]
         public IActionResult Delete(Guid guid)
         {
-            var data = _universityRepository.GetByGuid(guid);
-            if (data is null)
+            var delete = _service.DeleteUniversity(guid);
+
+            if (delete is -1)
             {
-                return NotFound("Guid is not found");
+                return NotFound(new HandlerForResponseEntity<GetUniversityDto>
+                {
+                    Code = StatusCodes.Status404NotFound,
+                    Status = HttpStatusCode.NotFound.ToString(),
+                    Message = "Id not found"
+                });
+            }
+            if (delete is 0)
+            {
+                return BadRequest(new HandlerForResponseEntity<GetUniversityDto>
+                {
+                    Code = StatusCodes.Status500InternalServerError,
+                    Status = HttpStatusCode.InternalServerError.ToString(),
+                    Message = "Check connection to database"
+                });
             }
 
-            var result = _universityRepository.Delete(data);
-            if (!result)
+            return Ok(new HandlerForResponseEntity<GetUniversityDto>
             {
-                return StatusCode(500, "Error Retrieve from database");
-            }
-
-            return Ok("Delete success");
+                Code = StatusCodes.Status200OK,
+                Status = HttpStatusCode.OK.ToString(),
+                Message = "Successfully deleted"
+            });
         }
     }
 }
