@@ -1,7 +1,11 @@
 ﻿using API.Contracts;
+using API.DTOs.Educations;
 using API.Models;
 using API.Repositories;
+using API.Services;
+using API.Utilities;
 using Microsoft.AspNetCore.Mvc;
+using System.Net;
 
 namespace API.Controllers
 {
@@ -9,84 +13,145 @@ namespace API.Controllers
     [Route("api/educations")]
     public class EducationController : ControllerBase
     {
-        private readonly IEducationRepository _educationRepository;
+        private readonly EducationService _service;
 
-        public EducationController(IEducationRepository educationRepository)
+        public EducationController(EducationService service)
         {
-            _educationRepository = educationRepository;
+            _service = service;
         }
 
         [HttpGet]
         public IActionResult GetAll()
         {
-            var result = _educationRepository.GetAll();
-            if (!result.Any())
+            var entities = _service.GetEducation();
+
+            if (entities == null)
             {
-                return NotFound();
+                return NotFound(new HandlerForResponseEntity<GetEducationDto>
+                {
+                    Code = StatusCodes.Status404NotFound,
+                    Status = HttpStatusCode.NotFound.ToString(),
+                    Message = "Data not found"
+                });
             }
 
-            return Ok(result);
+            return Ok(new HandlerForResponseEntity<IEnumerable<GetEducationDto>>
+            {
+                Code = StatusCodes.Status200OK,
+                Status = HttpStatusCode.OK.ToString(),
+                Message = "Data found",
+                Data = entities
+            });
         }
 
         [HttpGet("{guid}")]
         public IActionResult GetByGuid(Guid guid)
         {
-            var result = _educationRepository.GetByGuid(guid);
-            if (result is null)
+            var education = _service.GetEducation(guid);
+            if (education is null)
             {
-                return NotFound();
+                return NotFound(new HandlerForResponseEntity<GetEducationDto>
+                {
+                    Code = StatusCodes.Status404NotFound,
+                    Status = HttpStatusCode.NotFound.ToString(),
+                    Message = "Data not found"
+                });
             }
 
-            return Ok(result);
+            return Ok(new HandlerForResponseEntity<GetEducationDto>
+            {
+                Code = StatusCodes.Status200OK,
+                Status = HttpStatusCode.OK.ToString(),
+                Message = "Data found",
+                Data = education
+            });
         }
 
         [HttpPost]
-        public IActionResult Insert(Education education)
+        public IActionResult Create(NewEducationDto newEducationDto)
         {
-            var result = _educationRepository.Create(education);
-            if (result is null)
+            var createEducation = _service.CreateEducation(newEducationDto);
+            if (createEducation is null)
             {
-                return StatusCode(500, "Error Retrieve from database");
+                return BadRequest(new HandlerForResponseEntity<GetEducationDto>
+                {
+                    Code = StatusCodes.Status400BadRequest,
+                    Status = HttpStatusCode.BadRequest.ToString(),
+                    Message = "Data not created"
+                });
             }
 
-            return Ok(result);
+            return Ok(new HandlerForResponseEntity<GetEducationDto>
+            {
+                Code = StatusCodes.Status200OK,
+                Status = HttpStatusCode.OK.ToString(),
+                Message = "Successfully created",
+                Data = createEducation
+            });
         }
 
         [HttpPut]
-        public IActionResult Update(Education education)
+        public IActionResult Update(UpdateEducationDto updateEducationDto)
         {
-            var check = _educationRepository.GetByGuid(education.Guid);
-            if (check is null)
+            var update = _service.UpdateBooking(updateEducationDto);
+            if (update is -1)
             {
-                return NotFound("Guid is not found");
+                return NotFound(new HandlerForResponseEntity<UpdateEducationDto>
+                {
+                    Code = StatusCodes.Status404NotFound,
+                    Status = HttpStatusCode.NotFound.ToString(),
+                    Message = "Id not found"
+                });
             }
-
-            var result = _educationRepository.Update(education);
-            if (!result)
+            if (update is 0)
             {
-                return StatusCode(500, "Error Retrieve from database");
+                return BadRequest(new HandlerForResponseEntity<UpdateEducationDto>
+                {
+                    Code = StatusCodes.Status500InternalServerError,
+                    Status = HttpStatusCode.InternalServerError.ToString(),
+                    Message = "Check your data"
+                });
             }
-
-            return Ok("Update success");
+            return Ok(new HandlerForResponseEntity<UpdateEducationDto>
+            {
+                Code = StatusCodes.Status200OK,
+                Status = HttpStatusCode.OK.ToString(),
+                Message = "Successfully updated"
+            });
         }
 
         [HttpDelete]
         public IActionResult Delete(Guid guid)
         {
-            var data = _educationRepository.GetByGuid(guid);
-            if (data is null)
+            var delete = _service.DeleteEducation(guid);
+
+            if (delete is -1)
             {
-                return NotFound("Guid is not found");
+                return NotFound(new HandlerForResponseEntity<GetEducationDto>
+                {
+                    Code = StatusCodes.Status404NotFound,
+                    Status = HttpStatusCode.NotFound.ToString(),
+                    Message = "Id not found"
+                });
+            }
+            if (delete is 0)
+            {
+                return BadRequest(new HandlerForResponseEntity<GetEducationDto>
+                {
+                    Code = StatusCodes.Status500InternalServerError,
+                    Status = HttpStatusCode.InternalServerError.ToString(),
+                    Message = "Check connection to database"
+                });
             }
 
-            var result = _educationRepository.Delete(data);
-            if (!result)
+            return Ok(new HandlerForResponseEntity<GetEducationDto>
             {
-                return StatusCode(500, "Error Retrieve from database");
-            }
-
-            return Ok("Delete success");
+                Code = StatusCodes.Status200OK,
+                Status = HttpStatusCode.OK.ToString(),
+                Message = "Successfully deleted"
+            });
         }
+
     }
 }
 
