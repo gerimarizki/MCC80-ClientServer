@@ -15,5 +15,9 @@ namespace API.Repositories
 
         }
 
+        public string GetPastNik()
+        {
+            return _context.Set<Employee>().ToList().LastOrDefault()?.NIK;
+        }
     }
 }

@@ -1,4 +1,5 @@
-﻿using API.Utilities.Enums;
+﻿using API.DTOs.Employees;
+using API.Utilities.Enums;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -38,5 +39,10 @@ namespace API.Models
         public Account? Account { get; set; }
 
         public ICollection<Booking>? Bookings { get; set; }
+
+        public static implicit operator Employee(NewEmployeeDto v)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

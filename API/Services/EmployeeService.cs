@@ -1,6 +1,7 @@
 ﻿using API.Contracts;
 using API.DTOs.Employees;
 using API.Models;
+using API.Utilities;
 
 namespace API.Services
 {
@@ -60,8 +61,12 @@ namespace API.Services
 
         public GetEmployeeDto? CreateEmployee(NewEmployeeDto newEmployeeDto)
         {
-            var employee = new Employee
-            {
+            Employee employeeNIK = newEmployeeDto;
+            employeeNIK.NIK = HandlerGenerator.Nik(_employeeRepository.GetPastNik());
+             
+             var employee = new Employee
+             {
+                
                 Guid = new Guid(),
                 PhoneNumber = newEmployeeDto.PhoneNumber,
                 FirstName = newEmployeeDto.FirstName,
@@ -73,7 +78,8 @@ namespace API.Services
                 CreatedDate = DateTime.Now,
                 ModifiedDate = DateTime.Now
             };
-
+           
+            
             var createdEmployee = _employeeRepository.Create(employee);
             if (createdEmployee is null)
             {
@@ -83,6 +89,7 @@ namespace API.Services
             var toDto = new GetEmployeeDto
             {
                 Guid = employee.Guid,
+                NIK = employee.NIK,
                 BirthDate = employee.BirthDate,
                 Email = employee.Email,
                 FirstName = employee.FirstName,
