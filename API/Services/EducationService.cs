@@ -55,7 +55,7 @@ namespace API.Services
         {
             var education = new Education
             {
-                Guid = new Guid(),
+                Guid = newEducationDto.Guid,
                 Major = newEducationDto.Major,
                 Degree = newEducationDto.Degree,
                 GPA = newEducationDto.GPA,
@@ -72,14 +72,15 @@ namespace API.Services
 
             var toDto = new GetEducationDto
             {
-                Guid = education.Guid,
-                Major = education.Major,
-                Degree = education.Degree,
-                GPA = education.GPA,
-                UniversityGuid = education.UniversityGuid,
+                Guid = createdEducation.Guid,
+                Major = newEducationDto.Major,
+                Degree = newEducationDto.Degree,
+                GPA = newEducationDto.GPA,
+                UniversityGuid = newEducationDto.UniversityGuid
             };
             return toDto; // education created
         }
+
 
         public int UpdateBooking(UpdateEducationDto updateEducationDto)
         {

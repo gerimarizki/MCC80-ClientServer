@@ -1,5 +1,6 @@
 ﻿using API.Contracts;
 using API.DTOs.Accounts;
+using API.DTOs.Educations;
 using API.Models;
 
 namespace API.Services
@@ -24,8 +25,11 @@ namespace API.Services
                                                 new GetAccountDto
                                                 {
                                                     guid = account.Guid,
+                                                    Password = account.Password,
                                                     IsDeleted = account.IsDeleted,
+                                                    OTP = account.OTP,
                                                     IsUsed = account.IsUsed,
+                                                    ExpiredDate = account.ExpiredDate,
                                                 }).ToList();
 
             return toDto; // Account found
@@ -52,7 +56,7 @@ namespace API.Services
         {
             var account = new Account
             {
-                Guid = new Guid(),
+                Guid = newAccountDto.Guid,
                 Password = newAccountDto.Password,
                 IsDeleted = newAccountDto.IsDeleted,
                 OTP = newAccountDto.OTP,
@@ -71,11 +75,11 @@ namespace API.Services
             var toDto = new GetAccountDto
             {
                 guid = createdAccount.Guid,
-                Password = createdAccount.Password,
-                IsDeleted = createdAccount.IsDeleted,
-                OTP = createdAccount.OTP,
-                IsUsed = createdAccount.IsUsed,
-                ExpiredDate = createdAccount.ExpiredDate,
+                Password = newAccountDto.Password,
+                IsDeleted = newAccountDto.IsDeleted,
+                OTP = newAccountDto.OTP,
+                IsUsed = newAccountDto.IsUsed,
+                ExpiredDate = newAccountDto.ExpiredDate,
             };
             return toDto; // Account created
         }

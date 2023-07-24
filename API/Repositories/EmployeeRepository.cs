@@ -11,7 +11,8 @@ namespace API.Repositories
         public bool IsNotExist(string value)
         {
             return _context.Set<Employee>()
-                .SingleOrDefault(employee => employee.Email.Contains(value) || employee.PhoneNumber.Contains(value))is null;
+                .SingleOrDefault(employee => employee.Email.Contains(value) || employee.PhoneNumber.Contains(value)) is null;
+
         }
 
     }
