@@ -24,7 +24,6 @@ namespace API.Services
                                                 new GetEmployeeDto
                                                 {
                                                     Guid = employee.Guid,
-                                                    NIK = employee.NIK,
                                                     BirthDate = employee.BirthDate,
                                                     Email = employee.Email,
                                                     FirstName = employee.FirstName,
@@ -48,7 +47,6 @@ namespace API.Services
             var toDto = new GetEmployeeDto
             {
                 Guid = employee.Guid,
-                NIK = employee.NIK,
                 BirthDate = employee.BirthDate,
                 Email = employee.Email,
                 FirstName = employee.FirstName,
@@ -72,7 +70,6 @@ namespace API.Services
                 HiringDate = newEmployeeDto.HiringDate,
                 Email = newEmployeeDto.Email,
                 BirthDate = newEmployeeDto.BirthDate,
-                NIK = newEmployeeDto.NIK,
                 CreatedDate = DateTime.Now,
                 ModifiedDate = DateTime.Now
             };
@@ -86,7 +83,6 @@ namespace API.Services
             var toDto = new GetEmployeeDto
             {
                 Guid = employee.Guid,
-                NIK = employee.NIK,
                 BirthDate = employee.BirthDate,
                 Email = employee.Email,
                 FirstName = employee.FirstName,

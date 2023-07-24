@@ -53,8 +53,11 @@ namespace API.Services
             var account = new Account
             {
                 Guid = new Guid(),
+                Password = newAccountDto.Password,
                 IsDeleted = newAccountDto.IsDeleted,
+                OTP = newAccountDto.OTP,
                 IsUsed = newAccountDto.IsUsed,
+                ExpiredDate = newAccountDto.ExpiredDate,
                 CreatedDate = DateTime.Now,
                 ModifiedDate = DateTime.Now
             };
@@ -68,8 +71,11 @@ namespace API.Services
             var toDto = new GetAccountDto
             {
                 guid = createdAccount.Guid,
+                Password = createdAccount.Password,
                 IsDeleted = createdAccount.IsDeleted,
+                OTP = createdAccount.OTP,
                 IsUsed = createdAccount.IsUsed,
+                ExpiredDate = createdAccount.ExpiredDate,
             };
             return toDto; // Account created
         }

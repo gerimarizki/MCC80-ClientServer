@@ -76,7 +76,7 @@ namespace API.Services
                 Major = education.Major,
                 Degree = education.Degree,
                 GPA = education.GPA,
-                UniversityGuid = education.UniversityGuid
+                UniversityGuid = education.UniversityGuid,
             };
             return toDto; // education created
         }
