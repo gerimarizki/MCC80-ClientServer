@@ -24,5 +24,7 @@ namespace API.Repositories
         {
             return _context.Set<Employee>().SingleOrDefault(e => e.Email.Contains(email));
         }
+
+
     }
 }

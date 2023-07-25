@@ -64,10 +64,10 @@ namespace API.Services
         {
             Employee employeeNIK = newEmployeeDto;
             employeeNIK.NIK = HandlerGenerator.Nik(_employeeRepository.GetPastNik());
-             
+
             var employee = new Employee
-             {
-                
+            {
+
                 Guid = new Guid(),
                 PhoneNumber = newEmployeeDto.PhoneNumber,
                 FirstName = newEmployeeDto.FirstName,
@@ -79,8 +79,8 @@ namespace API.Services
                 CreatedDate = DateTime.Now,
                 ModifiedDate = DateTime.Now
             };
-           
-            
+
+
             var createdEmployee = _employeeRepository.Create(employee);
             if (createdEmployee is null)
             {
@@ -153,6 +153,22 @@ namespace API.Services
             }
 
             return 1;
+        }
+
+        //generate nik by employee service
+        public string GenerateNikByService()
+        {
+            int Nik = 111111;
+            var employee = GetEmployee();
+            if (employee is null)
+            {
+                Convert.ToString(Nik);
+                return Convert.ToString(Nik);
+            }
+            var lastEmployee = employee.OrderByDescending(e => e.NIK).FirstOrDefault();
+            int newNik = Int32.Parse(lastEmployee.NIK) + 1;
+            string lastNik = Convert.ToString(newNik);
+            return lastNik;
         }
     }
 }

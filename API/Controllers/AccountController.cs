@@ -7,6 +7,7 @@ using API.Services;
 using API.Utilities;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
+using API.DTOs.Register;
 
 namespace API.Controllers
 {
@@ -173,6 +174,30 @@ namespace API.Controllers
                 Code = StatusCodes.Status200OK,
                 Status = HttpStatusCode.OK.ToString(),
                 Message = "Login Success"
+            });
+        }
+
+        [Route("register")]
+        [HttpPost]
+        public IActionResult Register(RegisterDto register)
+        {
+            var createdRegister = _service.Register(register);
+            if (createdRegister == null)
+            {
+                return BadRequest(new HandlerForResponseEntity<RegisterDto>
+                {
+                    Code = StatusCodes.Status400BadRequest,
+                    Status = HttpStatusCode.BadRequest.ToString(),
+                    Message = "Register failed"
+                });
+            }
+
+            return Ok(new HandlerForResponseEntity<RegisterDto>
+            {
+                Code = StatusCodes.Status200OK,
+                Status = HttpStatusCode.OK.ToString(),
+                Message = "Successfully register",
+                Data = createdRegister
             });
         }
     }
