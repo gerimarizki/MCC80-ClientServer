@@ -1,13 +1,16 @@
 ﻿using API.Contracts;
 using API.DTOs.Accounts;
 using API.DTOs.Educations;
+using API.DTOs.Login;
 using API.Models;
+using API.Repositories;
 
 namespace API.Services
 {
     public class AccountService
     {
         private readonly IAccountRepository _accountRepository;
+        private readonly IEmployeeRepository _employeeRepository;
 
         public AccountService(IAccountRepository accountRepository)
         {
@@ -129,5 +132,25 @@ namespace API.Services
 
             return 1;
         }
+
+        public int Login(LoginDto loginDto)
+        {
+            var getEmployee = _employeeRepository.GetByEmail(loginDto.Email);
+
+            if (getEmployee is null)
+            {
+                return 0; // Employee not found
+            }
+
+            var getAccount = _accountRepository.GetByGuid(getEmployee.Guid);
+
+            if (getAccount.Password == loginDto.Password)
+            {
+                return 1; // Login success
+            }
+
+            return 0;
+        }
+
     }
 }

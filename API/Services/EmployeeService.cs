@@ -65,7 +65,7 @@ namespace API.Services
             Employee employeeNIK = newEmployeeDto;
             employeeNIK.NIK = HandlerGenerator.Nik(_employeeRepository.GetPastNik());
              
-             var employee = new Employee
+            var employee = new Employee
              {
                 
                 Guid = new Guid(),

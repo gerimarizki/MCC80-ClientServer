@@ -27,20 +27,14 @@ namespace API.Utilities.Validations.Employees
 
             RuleFor(employee => employee.Email)
                 .NotEmpty()
-                .EmailAddress()
-                .Must(IsDuplicateValue);
+                .EmailAddress();
 
             RuleFor(employee => employee.PhoneNumber)
                 .NotEmpty()
                 .MaximumLength(13)
                 .MinimumLength(11)
-                .Matches(@"^+[0-9]")
-                .Must(IsDuplicateValue);
+                .Matches(@"^+[0-9]");
         }
 
-        private bool IsDuplicateValue(string arg)
-        {
-            return _employeeRepository.IsNotExist(arg);
-        }
     }
 }

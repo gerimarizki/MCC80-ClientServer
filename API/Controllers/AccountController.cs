@@ -1,6 +1,7 @@
 ﻿using API.Contracts;
 using API.DTOs.Accounts;
 using API.DTOs.AccountRoles;
+using API.DTOs.Login;
 using API.Models;
 using API.Services;
 using API.Utilities;
@@ -149,6 +150,29 @@ namespace API.Controllers
                 Code = StatusCodes.Status200OK,
                 Status = HttpStatusCode.OK.ToString(),
                 Message = "Successfully deleted"
+            });
+        }
+
+        [HttpPost("login")]
+        public IActionResult Login(LoginDto loginDto)
+        {
+            var result = _service.Login(loginDto);
+
+            if (result is 0)
+            {
+                return NotFound(new HandlerForResponseEntity<LoginDto>
+                {
+                    Code = StatusCodes.Status404NotFound,
+                    Status = HttpStatusCode.NotFound.ToString(),
+                    Message = "Email or Password is incorrect"
+                });
+            }
+
+            return Ok(new HandlerForResponseEntity<LoginDto>
+            {
+                Code = StatusCodes.Status200OK,
+                Status = HttpStatusCode.OK.ToString(),
+                Message = "Login Success"
             });
         }
     }
