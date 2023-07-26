@@ -232,8 +232,60 @@ namespace API.Controllers
                 Message = "Otp has been sent to your email",
                 Data = forgetPasswordDto
             }); 
+        }
+        [HttpPut("ChangePassword")]
+        public IActionResult UpdatePassword(ChangePasswordDto changePasswordDto)
+        {
+            var update = _service.ChangePassword(changePasswordDto);
+            if (update is -1)
+            {
+                return NotFound(new HandlerForResponseEntity<ChangePasswordDto>
+                {
+                    Code = StatusCodes.Status404NotFound,
+                    Status = HttpStatusCode.NotFound.ToString(),
+                    Message = "Email not found"
+                });
+            }
+
+            if (update is 0)
+            {
+                return NotFound(new HandlerForResponseEntity<ChangePasswordDto>
+                {
+                    Code = StatusCodes.Status404NotFound,
+                    Status = HttpStatusCode.NotFound.ToString(),
+                    Message = "OTP doesn't match"
+                });
+            }
+
+            if (update is 1)
+            {
+                return NotFound(new HandlerForResponseEntity<ChangePasswordDto>
+                {
+                    Code = StatusCodes.Status404NotFound,
+                    Status = HttpStatusCode.NotFound.ToString(),
+                    Message = "OTP doesn't match"
+                });
+            }
+
+            if (update is 2)
+            {
+                return NotFound(new HandlerForResponseEntity<ChangePasswordDto>
+                {
+                    Code = StatusCodes.Status404NotFound,
+                    Status = HttpStatusCode.NotFound.ToString(),
+                    Message = "Otp Already Expired"
+                });
+            }
+
+            return Ok(new HandlerForResponseEntity<ChangePasswordDto>
+            {
+                Code = StatusCodes.Status200OK,
+                Status = HttpStatusCode.OK.ToString(),
+                Message = "Succesfuly Updated"
+            });
 
 
         }
+
     }
 }

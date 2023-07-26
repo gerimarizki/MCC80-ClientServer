@@ -7,5 +7,6 @@ namespace API.Contracts
         bool IsNotExist(string value);
         string GetPastNik();
         Employee GetByEmail(string email);
+        Employee? CheckEmail(string email);
     }
 }

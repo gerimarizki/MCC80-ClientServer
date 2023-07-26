@@ -26,5 +26,10 @@ namespace API.Repositories
         }
 
 
+        public Employee? CheckEmail(string email)
+        {
+            return _context.Set<Employee>().FirstOrDefault(u => u.Email == email);
+        }
+
     }
 }

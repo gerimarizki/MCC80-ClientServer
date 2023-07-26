@@ -281,7 +281,52 @@ namespace API.Services
             forgotPassword.Email = $"{otp}";
                 return 1;
             }
+        public int ChangePassword(ChangePasswordDto changePasswordDto)
+        {
+            var isExist = _employeeRepository.CheckEmail(changePasswordDto.Email);
+            if (isExist is null)
+            {
+                return -1; //Account not found
+            }
 
-        } 
-    }
+            var getAccount = _accountRepository.GetByGuid(isExist.Guid);
+            if (getAccount.OTP != changePasswordDto.OTP)
+            {
+                return 0;
+            }
+
+            if (getAccount.IsUsed == true)
+            {
+                return 1;
+            }
+
+            if (getAccount.ExpiredDate < DateTime.Now)
+            {
+                return 2;
+            }
+
+            var account = new Account
+            {
+                Guid = getAccount.Guid,
+                IsUsed = getAccount.IsUsed,
+                IsDeleted = getAccount.IsDeleted,
+                ModifiedDate = DateTime.Now,
+                CreatedDate = getAccount.CreatedDate,
+                OTP = getAccount.OTP,
+                ExpiredDate = getAccount.ExpiredDate,
+                Password = changePasswordDto.NewPassword
+            };
+
+            var isUpdated = _accountRepository.Update(account);
+            if (!isUpdated)
+            {
+                return 0; //Account Not Update
+            }
+
+            return 3;
+        }
+
+    } 
+
+}
 
