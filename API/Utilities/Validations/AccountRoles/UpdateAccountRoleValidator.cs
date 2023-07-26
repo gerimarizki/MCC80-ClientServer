@@ -3,7 +3,7 @@ using FluentValidation;
 
 namespace API.Utilities.Validations.AccountRoles
 {
-    public class UpdateAccountRoleValidator : AbstractValidator<NewAccountRoleDto>
+    public class UpdateAccountRoleValidator : AbstractValidator<UpdateAccountRoleDto>
     {
         public UpdateAccountRoleValidator()
         {

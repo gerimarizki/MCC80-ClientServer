@@ -12,9 +12,7 @@ namespace API.Utilities.Validations.Accounts
             _employeeRepository = employeeRepository;
 
             RuleFor(register => register.Email)
-            .NotEmpty().WithMessage("Email is required")
-            .EmailAddress().WithMessage("Email is not valid")
-            .Must(IsDuplicateValue).WithMessage("Email already exist");
+            .NotEmpty().WithMessage("Email is required");
             RuleFor(Account => Account.OTP)
                .NotEmpty().WithMessage("OTP is required");         
             RuleFor(Account => Account.NewPassword)

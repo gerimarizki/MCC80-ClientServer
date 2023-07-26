@@ -3,7 +3,7 @@ using FluentValidation;
 
 namespace API.Utilities.Validations.Educations
 {
-    public class UpdateEducationValidator : AbstractValidator<NewEducationDto>
+    public class UpdateEducationValidator : AbstractValidator<UpdateEducationDto>
     {
         public UpdateEducationValidator()
         {

@@ -3,7 +3,7 @@ using FluentValidation;
 
 namespace API.Utilities.Validations.Rooms
 {
-    public class UpdateRoomValidator : AbstractValidator<NewRoomDto>
+    public class UpdateRoomValidator : AbstractValidator<UpdateRoomDto>
     {
         public UpdateRoomValidator()
         {

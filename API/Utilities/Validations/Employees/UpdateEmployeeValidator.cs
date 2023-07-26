@@ -4,7 +4,7 @@ using FluentValidation;
 
 namespace API.Utilities.Validations.Employees
 {
-    public class UpdateEmployeeValidator : AbstractValidator<NewEmployeeDto>
+    public class UpdateEmployeeValidator : AbstractValidator<UpdateEmployeeDto>
     {
         private readonly IEmployeeRepository _employeeRepository;
         public UpdateEmployeeValidator(IEmployeeRepository employeeRepository)

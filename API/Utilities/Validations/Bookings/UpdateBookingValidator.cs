@@ -3,7 +3,7 @@ using FluentValidation;
 
 namespace API.Utilities.Validations.Bookings
 {
-    public class UpdateBookingValidator : AbstractValidator<NewBookingDto>
+    public class UpdateBookingValidator : AbstractValidator<UpdateBookingDto>
     {
         public UpdateBookingValidator()
         {

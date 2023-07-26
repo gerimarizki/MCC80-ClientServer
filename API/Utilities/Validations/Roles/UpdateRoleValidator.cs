@@ -3,7 +3,7 @@ using FluentValidation;
 
 namespace API.Utilities.Validations.Roles
 {
-    public class UpdateRoleValidator : AbstractValidator<NewRoleDto>
+    public class UpdateRoleValidator : AbstractValidator<UpdateRoleDto>
     {
         public UpdateRoleValidator()
         {
