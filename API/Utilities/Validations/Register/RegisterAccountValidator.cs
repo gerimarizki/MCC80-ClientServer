@@ -58,8 +58,9 @@ namespace API.Utilities.Validations.Register
               .NotEmpty().WithMessage("Password is required")
               .Matches("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[^a-zA-Z\\d]).{8,}$");
             RuleFor(register => register.ConfirmPassword)
-             .Equal(register => register.Password)
+             .Equal(register => register.Password).WithMessage("Password Correct")
              .WithMessage("Passwords do not match");
+
 
         }
 

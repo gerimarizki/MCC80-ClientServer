@@ -1,4 +1,5 @@
 ﻿using API.Contracts;
+using API.DTOs.Accounts;
 using API.DTOs.Employees;
 using API.Models;
 using API.Utilities;
@@ -62,13 +63,11 @@ namespace API.Services
 
         public GetEmployeeDto? CreateEmployee(NewEmployeeDto newEmployeeDto)
         {
-            Employee employeeNIK = newEmployeeDto;
-            employeeNIK.NIK = HandlerGenerator.Nik(_employeeRepository.GetPastNik());
 
             var employee = new Employee
             {
-
                 Guid = new Guid(),
+                NIK = GenerateNikByService(),
                 PhoneNumber = newEmployeeDto.PhoneNumber,
                 FirstName = newEmployeeDto.FirstName,
                 LastName = newEmployeeDto.LastName,
@@ -170,5 +169,23 @@ namespace API.Services
             string lastNik = Convert.ToString(newNik);
             return lastNik;
         }
+
+        public OtpResponseDto? GetByEmail(string email)
+        {
+            var account = _employeeRepository.GetAll()
+                .FirstOrDefault(e => e.Email.Contains(email));
+
+            if (account != null)
+            {
+                return new OtpResponseDto
+                {
+                    Email = account.Email,
+                    Guid = account.Guid
+                };
+            }
+
+            return null;
+        }
+
     }
 }

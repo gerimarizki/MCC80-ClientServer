@@ -8,6 +8,7 @@ using API.Utilities;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
 using API.DTOs.Register;
+using Microsoft.AspNetCore.Authorization;
 
 namespace API.Controllers
 {
@@ -16,10 +17,12 @@ namespace API.Controllers
     public class AccountController : ControllerBase
     {
         private readonly AccountService _service;
+        private readonly EmployeeService _employeeService;
 
-        public AccountController(AccountService service)
+        public AccountController(AccountService service, EmployeeService employee)
         {
             _service = service;
+            _employeeService = employee;
         }
 
         [HttpGet]
@@ -199,6 +202,38 @@ namespace API.Controllers
                 Message = "Successfully register",
                 Data = createdRegister
             });
+        }
+
+        [HttpPost("forget-password")]
+
+        public IActionResult ForgetPassword(ForgotPasswordOTPDto forgetPasswordDto)
+        {
+            var isUpdated = _service.ForgotPassword(forgetPasswordDto);
+            if (isUpdated == 0)
+                return NotFound(new HandlerForResponseEntity<ForgotPasswordOTPDto>
+                {
+                    Code = StatusCodes.Status404NotFound,
+                    Status = HttpStatusCode.NotFound.ToString(),
+                    Message = "Email not found"
+                });
+
+            if (isUpdated is -1)
+                return StatusCode(StatusCodes.Status500InternalServerError, new HandlerForResponseEntity<ForgotPasswordOTPDto>
+                {
+                    Code = StatusCodes.Status500InternalServerError,
+                    Status = HttpStatusCode.InternalServerError.ToString(),
+                    Message = "Error retrieving data from the database"
+                });
+
+            return Ok(new HandlerForResponseEntity<ForgotPasswordOTPDto>
+            {
+                Code = StatusCodes.Status200OK,
+                Status = HttpStatusCode.OK.ToString(),
+                Message = "Otp has been sent to your email",
+                Data = forgetPasswordDto
+            }); 
+
+
         }
     }
 }

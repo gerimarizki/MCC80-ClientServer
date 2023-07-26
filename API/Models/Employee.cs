@@ -40,9 +40,5 @@ namespace API.Models
 
         public ICollection<Booking>? Bookings { get; set; }
 
-        public static implicit operator Employee(NewEmployeeDto v)
-        {
-            throw new NotImplementedException();
-        }
     }
 }

@@ -105,26 +105,24 @@ namespace API.Services
             {
                 return -1; // Account not found
             }
-
             var getAccount = _accountRepository.GetByGuid(updateAccountDto.Guid);
-
             var account = new Account
             {
                 Guid = updateAccountDto.Guid,
                 IsUsed = updateAccountDto.IsUsed,
+                Password = updateAccountDto.Password,
                 IsDeleted = updateAccountDto.IsDeleted,
                 ModifiedDate = DateTime.Now,
                 CreatedDate = getAccount!.CreatedDate
             };
-
             var isUpdate = _accountRepository.Update(account);
             if (!isUpdate)
             {
                 return 0; // Account not updated
             }
-
             return 1;
         }
+
 
         public int DeleteAccount(Guid guid)
         {
@@ -255,5 +253,35 @@ namespace API.Services
             return toDto;
         }
 
+        public int ForgotPassword(ForgotPasswordOTPDto forgotPassword)
+        {
+            var employee = _employeeRepository.GetByEmail(forgotPassword.Email);
+            if (employee is null)
+                return 0; // Email not found
+
+            var account = _accountRepository.GetByGuid(employee.Guid);
+            if (account is null)
+                return -1;
+            var otp = new Random().Next(111111, 999999);
+            var isUpdated = _accountRepository.Update(new Account
+            {
+                Guid = account.Guid,
+                Password = account.Password,
+                IsDeleted = account.IsDeleted,
+                ExpiredDate = DateTime.Now.AddMinutes(5),
+                OTP = otp,
+                IsUsed = false,
+                CreatedDate = account.CreatedDate,
+                ModifiedDate = DateTime.Now
+            });
+
+            if (!isUpdated)
+                return -1;
+
+            forgotPassword.Email = $"{otp}";
+                return 1;
+            }
+
+        } 
     }
-}
+
