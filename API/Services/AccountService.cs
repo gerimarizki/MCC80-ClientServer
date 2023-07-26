@@ -308,7 +308,7 @@ namespace API.Services
             var account = new Account
             {
                 Guid = getAccount.Guid,
-                IsUsed = getAccount.IsUsed,
+                IsUsed = true,
                 IsDeleted = getAccount.IsDeleted,
                 ModifiedDate = DateTime.Now,
                 CreatedDate = getAccount.CreatedDate,

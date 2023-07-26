@@ -11,21 +11,17 @@ namespace API.Utilities.Validations.Accounts
         {
             _employeeRepository = employeeRepository;
 
-            RuleFor(register => register.Email)
+            RuleFor(Change => Change.Email)
             .NotEmpty().WithMessage("Email is required");
-            RuleFor(Account => Account.OTP)
-               .NotEmpty().WithMessage("OTP is required");         
-            RuleFor(Account => Account.NewPassword)
+            RuleFor(Change => Change.OTP)
+               .NotEmpty().WithMessage("OTP is required");  
+            
+            RuleFor(Change => Change.NewPassword)
                .NotEmpty().WithMessage("Password is required")
               .Matches("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[^a-zA-Z\\d]).{8,}$");
-            RuleFor(Account => Account.ConfirmPassword)
-                .Equal(register => register.NewPassword).WithMessage("Password Correct")
+            RuleFor(Change => Change.ConfirmPassword)
+                .Equal(Change => Change.NewPassword).WithMessage("Password Correct")
              .WithMessage("Passwords do not match");
-        }
-
-        private bool IsDuplicateValue(string arg)
-        {
-            return _employeeRepository.IsNotExist(arg);
         }
     }
 }

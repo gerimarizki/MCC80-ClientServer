@@ -263,7 +263,7 @@ namespace API.Controllers
                 {
                     Code = StatusCodes.Status404NotFound,
                     Status = HttpStatusCode.NotFound.ToString(),
-                    Message = "OTP doesn't match"
+                    Message = "OTP is used"
                 });
             }
 
