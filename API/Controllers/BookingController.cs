@@ -1,5 +1,6 @@
 ﻿using API.Contracts;
 using API.DTOs.Bookings;
+using API.DTOs.Rooms;
 using API.Models;
 using API.Services;
 using API.Utilities;
@@ -193,6 +194,53 @@ namespace API.Controllers
                 Code = StatusCodes.Status200OK,
                 Status = HttpStatusCode.OK.ToString(),
                 Message = "Success retrieve data",
+                Data = result
+            });
+        }
+
+        [HttpGet("FreeRoomsToday")]
+        public IActionResult FreeRoomsToday()
+        {
+            var result = _service.FreeRoomToday();
+            if (result is null)
+            {
+                return NotFound(new HandlerForResponseEntity<GetRoomDto>
+                {
+                    Code = StatusCodes.Status404NotFound,
+                    Status = HttpStatusCode.NotFound.ToString(),
+                    Message = "Room not found"
+                });
+            }
+
+            return Ok(new HandlerForResponseEntity<IEnumerable<GetRoomDto>>
+            {
+                Code = StatusCodes.Status200OK,
+                Status = HttpStatusCode.OK.ToString(),
+                Message = "Success retrieving data",
+                Data = result
+            });
+        }
+
+        [HttpGet("BookingLength")]
+        public IActionResult BookingLength()
+        {
+            var result = _service.BookingLength();
+            if (!result.Any())
+            {
+                return NotFound(new HandlerForResponseEntity<BookingLengthDto>
+                {
+                    Code = StatusCodes.Status404NotFound,
+                    Status = HttpStatusCode.NotFound.ToString(),
+                    Message = "Room not found"
+                });
+            }
+
+            return Ok(
+            new HandlerForResponseEntity<IEnumerable<BookingLengthDto>>
+            {
+                Code = StatusCodes.Status200OK,
+                Status = HttpStatusCode.OK.ToString(),
+                Message = "Success retrieving data",
                 Data = result
             });
         }
