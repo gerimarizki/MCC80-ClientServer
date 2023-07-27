@@ -14,5 +14,9 @@ namespace API.Repositories
             return _context.Set<University>().Where(u => u.Name.Contains(name));
         }
 
+        public Guid GetLastUniversityGuid()
+        {
+            return _context.Set<University>().ToList().LastOrDefault().Guid;
+        }
     }
 }
