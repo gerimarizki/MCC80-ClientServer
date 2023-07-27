@@ -198,70 +198,32 @@ namespace API.Services
 
         public IEnumerable<EmployeeDetailDto> GetAllEmployeeDetail()
         {
-            var employees = _employeeRepository.GetAll();
+            var result = from employee in _employeeRepository.GetAll()
+                         join education in _educationRepository.GetAll() on employee.Guid equals education.Guid
+                         join university in _universityRepository.GetAll() on education.UniversityGuid equals
+                             university.Guid
+                         select new EmployeeDetailDto
+                         {
+                             EmployeeGuid = employee.Guid,
+                             NIK = employee.NIK,
+                             FullName = employee.FirstName + " " + employee.LastName,
+                             BirthDate = employee.BirthDate,
+                             Gender = employee.Gender,
+                             HiringDate = employee.HiringDate,
+                             Email = employee.Email,
+                             PhoneNumber = employee.PhoneNumber,
+                             Major = education.Major,
+                             Degree = education.Degree,
+                             GPA = education.Gpa,
+                             UniversityName = university.Name
+                         };
 
-            if (!employees.Any())
-            {
-                return Enumerable.Empty<EmployeeDetailDto>();
-            }
-
-            var employeesDetailDto = new List<EmployeeDetailDto>();
-
-            foreach (var emp in employees)
-            {
-                var education = _educationRepository.GetByGuid(emp.Guid);
-                var university = _universityRepository.GetByGuid(education.Guid);
-
-                EmployeeDetailDto employeeDetail = new EmployeeDetailDto
-                {
-                    EmployeeGuid = emp.Guid,
-                    NIK = emp.NIK,
-                    FullName = emp.FirstName + " " + emp.LastName,
-                    BirthDate = emp.BirthDate,
-                    Gender = emp.Gender,
-                    HiringDate = emp.HiringDate,
-                    Email = emp.Email,
-                    PhoneNumber = emp.PhoneNumber,
-                    Major = education.Major,
-                    Degree = education.Degree,
-                    GPA = education.GPA,
-                    UniversityName = university.Name
-
-                };
-                employeesDetailDto.Add(employeeDetail);
-            };
-            return employeesDetailDto;
+            return result;
         }
 
         public EmployeeDetailDto? GetAllEmployeeDetailByGuid(Guid guid)
         {
-            var employees = _employeeRepository.GetByGuid(guid);
-
-            if (employees is null)
-            {
-                return null;
-            }
-
-            var education = _educationRepository.GetByGuid(employees.Guid);
-            var university = _universityRepository.GetByGuid(education.Guid);
-
-            return new EmployeeDetailDto
-            {
-                EmployeeGuid = employees.Guid,
-                NIK = employees.NIK,
-                FullName = employees.FirstName + " " + employees.LastName,
-                BirthDate = employees.BirthDate,
-                Gender = employees.Gender,
-                HiringDate = employees.HiringDate,
-                Email = employees.Email,
-                PhoneNumber = employees.PhoneNumber,
-                Major = education.Major,
-                Degree = education.Degree,
-                GPA = education.GPA,
-                UniversityName = university.Name
-
-            };
-        
+            return GetAllEmployeeDetail().SingleOrDefault(e => e.EmployeeGuid == guid);
         }
     }
 }
