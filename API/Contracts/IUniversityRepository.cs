@@ -5,5 +5,9 @@ namespace API.Contracts
     public interface IUniversityRepository : IGeneralRepository<University>
     {
         IEnumerable<University> GetByName(string name);
+
+        University? GetByCode(string code);
+
+        public University? IsExist (string value);
     }
 }

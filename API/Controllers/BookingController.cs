@@ -150,5 +150,51 @@ namespace API.Controllers
                 Message = "Successfully deleted"
             });
         }
+
+        [HttpPost("detailBooking/{bookingGuid}")]
+        public IActionResult GetDetailByGuid(Guid bookingGuid)
+        {
+            var result = _service.GetDetailByGuid(bookingGuid);
+            if (result is null)
+            {
+                return NotFound(new HandlerForResponseEntity<DetailBookingDto>
+                {
+                    Code = StatusCodes.Status404NotFound,
+                    Status = HttpStatusCode.NotFound.ToString(),
+                    Message = "Booking not found"
+                });
+            }
+
+            return Ok(new HandlerForResponseEntity<DetailBookingDto>
+            {
+                Code = StatusCodes.Status200OK,
+                Status = HttpStatusCode.OK.ToString(),
+                Message = "Success retrieve data",
+                Data = result
+            });
+        }
+
+        [HttpGet("detailBooking")]
+        public IActionResult GetAllDetail()
+        {
+            var result = _service.GetALl();
+            if (!result.Any())
+            {
+                return NotFound(new HandlerForResponseEntity<GetBookingDto>
+                {
+                    Code = StatusCodes.Status404NotFound,
+                    Status = HttpStatusCode.NotFound.ToString(),
+                    Message = "Data is not found"
+                });
+            }
+
+            return Ok(new HandlerForResponseEntity<IEnumerable<DetailBookingDto>>
+            {
+                Code = StatusCodes.Status200OK,
+                Status = HttpStatusCode.OK.ToString(),
+                Message = "Success retrieve data",
+                Data = result
+            });
+        }
     }
 }

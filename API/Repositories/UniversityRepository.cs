@@ -18,5 +18,15 @@ namespace API.Repositories
         {
             return _context.Set<University>().ToList().LastOrDefault().Guid;
         }
+
+        public University? IsExist(string code)
+        {
+            return _context.Set<University>().SingleOrDefault(u => u.Code.Contains(code));
+        }
+
+        public University? GetByCode(string code)
+        {
+            return _context.Set<University>().SingleOrDefault(u => u.Code == code);
+        }
     }
 }
