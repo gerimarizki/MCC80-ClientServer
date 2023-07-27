@@ -8,7 +8,8 @@ namespace API.Utilities.Validations.Accounts
         public ForgotPasswordOTPValidator()
         {
             RuleFor(forgot => forgot.Email)
-                .NotEmpty().WithMessage("Email is required");
+                .NotEmpty().WithMessage("Email is required")
+                .EmailAddress().WithMessage("Email is not valid");
         }
     }
 }

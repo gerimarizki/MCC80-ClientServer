@@ -204,12 +204,12 @@ namespace API.Controllers
             });
         }
 
-        [HttpPost("forget-password")]
+        [HttpPost("forgot-password")]
 
-        public IActionResult ForgetPassword(ForgotPasswordOTPDto forgetPasswordDto)
+        public IActionResult ForgotPassword(ForgotPasswordOTPDto forgotPasswordDto)
         {
-            var isUpdated = _service.ForgotPassword(forgetPasswordDto);
-            if (isUpdated == 0)
+            var isUpdated = _service.ForgotPassword(forgotPasswordDto);
+            if (isUpdated is 0)
                 return NotFound(new HandlerForResponseEntity<ForgotPasswordOTPDto>
                 {
                     Code = StatusCodes.Status404NotFound,
@@ -229,15 +229,14 @@ namespace API.Controllers
             {
                 Code = StatusCodes.Status200OK,
                 Status = HttpStatusCode.OK.ToString(),
-                Message = "Otp has been sent to your email",
-                Data = forgetPasswordDto
+                Message = "Otp has been sent to your email"
             }); 
         }
         [HttpPut("ChangePassword")]
         public IActionResult UpdatePassword(ChangePasswordDto changePasswordDto)
         {
             var update = _service.ChangePassword(changePasswordDto);
-            if (update is -1)
+            if (update is 0)
             {
                 return NotFound(new HandlerForResponseEntity<ChangePasswordDto>
                 {
@@ -247,7 +246,7 @@ namespace API.Controllers
                 });
             }
 
-            if (update is 0)
+            if (update is -1)
             {
                 return NotFound(new HandlerForResponseEntity<ChangePasswordDto>
                 {
@@ -257,7 +256,7 @@ namespace API.Controllers
                 });
             }
 
-            if (update is 1)
+            if (update is -2)
             {
                 return NotFound(new HandlerForResponseEntity<ChangePasswordDto>
                 {
@@ -267,7 +266,7 @@ namespace API.Controllers
                 });
             }
 
-            if (update is 2)
+            if (update is -3)
             {
                 return NotFound(new HandlerForResponseEntity<ChangePasswordDto>
                 {

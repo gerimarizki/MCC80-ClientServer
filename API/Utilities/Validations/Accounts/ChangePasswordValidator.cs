@@ -12,7 +12,8 @@ namespace API.Utilities.Validations.Accounts
             _employeeRepository = employeeRepository;
 
             RuleFor(Change => Change.Email)
-            .NotEmpty().WithMessage("Email is required");
+            .NotEmpty().WithMessage("Email is required")
+            .EmailAddress().WithMessage("Email is not valid");
             RuleFor(Change => Change.OTP)
                .NotEmpty().WithMessage("OTP is required");  
             

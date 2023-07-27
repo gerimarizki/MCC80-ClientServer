@@ -256,30 +256,41 @@ namespace API.Services
 
         public int ForgotPassword(ForgotPasswordOTPDto forgotPassword)
         {
-            var employee = _employeeRepository.GetByEmail(forgotPassword.Email);
-            if (employee is null)
-                return 0; // Email not found
+            //var employee = _employeeRepository.GetByEmail(forgotPassword.Email);
+            //if (employee is null)
+            //    return 0; // Email not found
 
-            var account = _accountRepository.GetByGuid(employee.Guid);
-            if (account is null)
-                return -1;
-            var otp = new Random().Next(111111, 999999);
-            var isUpdated = _accountRepository.Update(new Account
+            //var account = _accountRepository.GetByGuid(employee.Guid);
+            //if (account is null)
+            //    return -1;
+            var getAccountDetail = (from e in _employeeRepository.GetAll()
+                                    join a in _accountRepository.GetAll() on e.Guid equals a.Guid
+                                    where e.Email == forgotPassword.Email
+                                    select a).FirstOrDefault();
+
+            _accountRepository.Clear();
+            if (getAccountDetail is null)
             {
-                Guid = account.Guid,
-                Password = account.Password,
-                IsDeleted = account.IsDeleted,
+                return 0;
+            }
+
+            var otp = new Random().Next(111111, 999999);
+            var account = new Account
+            {
+                Guid = getAccountDetail.Guid,
+                Password = getAccountDetail.Password,
                 ExpiredDate = DateTime.Now.AddMinutes(5),
                 OTP = otp,
                 IsUsed = false,
-                CreatedDate = account.CreatedDate,
+                CreatedDate = getAccountDetail.CreatedDate,
                 ModifiedDate = DateTime.Now
-            });
+            };
+
+            var isUpdated = _accountRepository.Update(account);
 
             if (!isUpdated)
                 return -1;
 
-            forgotPassword.Email = $"{otp}";
                 return 1;
             }
         public int ChangePassword(ChangePasswordDto changePasswordDto)
@@ -287,30 +298,29 @@ namespace API.Services
             var isExist = _employeeRepository.CheckEmail(changePasswordDto.Email);
             if (isExist is null)
             {
-                return -1; //Account not found
+                return 0; //Account not found
             }
 
             var getAccount = _accountRepository.GetByGuid(isExist.Guid);
             if (getAccount.OTP != changePasswordDto.OTP)
             {
-                return 0;
+                return -1;
             }
 
-            if (getAccount.IsUsed == true)
+            if (getAccount.IsUsed)
             {
-                return 1;
+                return -2;
             }
 
             if (getAccount.ExpiredDate < DateTime.Now)
             {
-                return 2;
+                return -3;
             }
 
             var account = new Account
             {
                 Guid = getAccount.Guid,
                 IsUsed = true,
-                IsDeleted = getAccount.IsDeleted,
                 ModifiedDate = DateTime.Now,
                 CreatedDate = getAccount.CreatedDate,
                 OTP = getAccount.OTP,
@@ -321,10 +331,10 @@ namespace API.Services
             var isUpdated = _accountRepository.Update(account);
             if (!isUpdated)
             {
-                return 0; //Account Not Update
+                return -4; //Account Not Update
             }
 
-            return 3;
+            return 1;
         }
 
     } 
