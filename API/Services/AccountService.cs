@@ -7,6 +7,7 @@ using API.DTOs.Register;
 using API.Models;
 using API.Repositories;
 using API.Utilities;
+using API.Utilities.Validations;
 
 namespace API.Services
 {
@@ -144,21 +145,21 @@ namespace API.Services
 
         public int Login(LoginDto loginDto)
         {
-            var getEmployee = _employeeRepository.GetByEmail(loginDto.Email);
+            var employeeAccount = from e in _employeeRepository.GetAll()
+                                  join a in _accountRepository.GetAll() on e.Guid equals a.Guid
+                                  where e.Email == loginDto.Email && HashingHandler.ValidateHash(loginDto.Password, a.Password)
+                                  select new LoginDto()
+                                  {
+                                      Email = e.Email,
+                                      Password = a.Password
+                                  };
 
-            if (getEmployee is null)
+            if (!employeeAccount.Any())
             {
-                return 0; // Employee not found
+                return -1;
             }
 
-            var getAccount = _accountRepository.GetByGuid(getEmployee.Guid);
-
-            if (getAccount.Password == loginDto.Password)
-            {
-                return 1; // Login success
-            }
-
-            return 0;
+            return 1; // Email or Password incorrect.  
         }
 
         public RegisterDto? Register(RegisterDto registerDto)
@@ -218,7 +219,7 @@ namespace API.Services
             Account account = new Account
             {
                 Guid = employee.Guid,
-                Password = registerDto.Password,
+                Password = HashingHandler.GenerateHash(registerDto.Password)
             };
 
             if (registerDto.Password != registerDto.ConfirmPassword)
@@ -242,7 +243,7 @@ namespace API.Services
                 HiringDate = createdEmployee.HiringDate,
                 Email = createdEmployee.Email,
                 PhoneNumber = createdEmployee.PhoneNumber,
-                Password = createdAccount.Password,
+                Password = HashingHandler.GenerateHash(createdAccount.Password),
                 Major = createdEducation.Major,
                 Degree = createdEducation.Degree,
                 GPA = createdEducation.GPA,
@@ -256,19 +257,13 @@ namespace API.Services
 
         public int ForgotPassword(ForgotPasswordOTPDto forgotPassword)
         {
-            //var employee = _employeeRepository.GetByEmail(forgotPassword.Email);
-            //if (employee is null)
-            //    return 0; // Email not found
-
-            //var account = _accountRepository.GetByGuid(employee.Guid);
-            //if (account is null)
-            //    return -1;
             var getAccountDetail = (from e in _employeeRepository.GetAll()
                                     join a in _accountRepository.GetAll() on e.Guid equals a.Guid
                                     where e.Email == forgotPassword.Email
                                     select a).FirstOrDefault();
 
             _accountRepository.Clear();
+
             if (getAccountDetail is null)
             {
                 return 0;
@@ -278,7 +273,7 @@ namespace API.Services
             var account = new Account
             {
                 Guid = getAccountDetail.Guid,
-                Password = getAccountDetail.Password,
+                Password = HashingHandler.GenerateHash(getAccountDetail.Password),
                 ExpiredDate = DateTime.Now.AddMinutes(5),
                 OTP = otp,
                 IsUsed = false,
@@ -295,43 +290,42 @@ namespace API.Services
             }
         public int ChangePassword(ChangePasswordDto changePasswordDto)
         {
-            var isExist = _employeeRepository.CheckEmail(changePasswordDto.Email);
-            if (isExist is null)
+            var getAccountDetail = (from e in _employeeRepository.GetAll()
+                                    join a in _accountRepository.GetAll() on e.Guid equals a.Guid
+                                    where e.Email == changePasswordDto.Email
+                                    select a).FirstOrDefault();
+            _accountRepository.Clear();
+            if (getAccountDetail is null)
             {
-                return 0; //Account not found
+                return -1; // Account not found
             }
-
-            var getAccount = _accountRepository.GetByGuid(isExist.Guid);
-            if (getAccount.OTP != changePasswordDto.OTP)
-            {
-                return -1;
-            }
-
-            if (getAccount.IsUsed)
+            if (getAccountDetail.OTP != changePasswordDto.OTP)
             {
                 return -2;
             }
-
-            if (getAccount.ExpiredDate < DateTime.Now)
+            if (getAccountDetail.IsUsed)
             {
                 return -3;
             }
-
+            if (getAccountDetail.ExpiredDate < DateTime.Now)
+            {
+                return -4;
+            }
             var account = new Account
             {
-                Guid = getAccount.Guid,
+                Guid = getAccountDetail.Guid,
                 IsUsed = true,
                 ModifiedDate = DateTime.Now,
-                CreatedDate = getAccount.CreatedDate,
-                OTP = getAccount.OTP,
-                ExpiredDate = getAccount.ExpiredDate,
-                Password = changePasswordDto.NewPassword
+                CreatedDate = getAccountDetail.CreatedDate,
+                OTP = getAccountDetail.OTP,
+                ExpiredDate = getAccountDetail.ExpiredDate,
+                Password = HashingHandler.GenerateHash(getAccountDetail.Password)
             };
 
             var isUpdated = _accountRepository.Update(account);
             if (!isUpdated)
             {
-                return -4; //Account Not Update
+                return -5; //Account Not Update
             }
 
             return 1;

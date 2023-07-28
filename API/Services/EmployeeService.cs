@@ -214,7 +214,7 @@ namespace API.Services
                              PhoneNumber = employee.PhoneNumber,
                              Major = education.Major,
                              Degree = education.Degree,
-                             GPA = education.Gpa,
+                             GPA = education.GPA,
                              UniversityName = university.Name
                          };
 

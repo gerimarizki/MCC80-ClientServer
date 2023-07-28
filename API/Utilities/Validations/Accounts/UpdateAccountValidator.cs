@@ -15,8 +15,6 @@ namespace API.Utilities.Validations.Accounts
             RuleFor(Account => Account.ExpiredDate)
                 .NotEmpty()
                 .GreaterThanOrEqualTo(DateTime.Now.AddYears(10));
-            RuleFor(Account => Account.ExpiredTimeOTP)
-                .NotEmpty();
         }
     }
 }
