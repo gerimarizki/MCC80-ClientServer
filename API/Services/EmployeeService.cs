@@ -59,6 +59,7 @@ namespace API.Services
             var toDto = new GetEmployeeDto
             {
                 Guid = employee.Guid,
+                NIK = employee.NIK,
                 BirthDate = employee.BirthDate,
                 Email = employee.Email,
                 FirstName = employee.FirstName,

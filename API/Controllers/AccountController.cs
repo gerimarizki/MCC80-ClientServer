@@ -236,7 +236,7 @@ namespace API.Controllers
         public IActionResult UpdatePassword(ChangePasswordDto changePasswordDto)
         {
             var update = _service.ChangePassword(changePasswordDto);
-            if (update is 0)
+            if (update is -1)
             {
                 return NotFound(new HandlerForResponseEntity<ChangePasswordDto>
                 {
@@ -246,7 +246,7 @@ namespace API.Controllers
                 });
             }
 
-            if (update is -1)
+            if (update is -2)
             {
                 return NotFound(new HandlerForResponseEntity<ChangePasswordDto>
                 {
@@ -256,7 +256,7 @@ namespace API.Controllers
                 });
             }
 
-            if (update is -2)
+            if (update is -3)
             {
                 return NotFound(new HandlerForResponseEntity<ChangePasswordDto>
                 {
@@ -266,7 +266,7 @@ namespace API.Controllers
                 });
             }
 
-            if (update is -3)
+            if (update is -4)
             {
                 return NotFound(new HandlerForResponseEntity<ChangePasswordDto>
                 {
