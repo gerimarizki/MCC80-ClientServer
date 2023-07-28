@@ -17,16 +17,19 @@ namespace API.Services
         private readonly IEmployeeRepository _employeeRepository;
         private readonly IUniversityRepository _universityRepository;
         private readonly IEducationRepository _educationRepository;
+        private readonly IEmailHandler _emailHandler;
 
         public AccountService(IAccountRepository accountRepository,
                          IEmployeeRepository employeeRepository,
                          IUniversityRepository universityRepository,
-                         IEducationRepository educationRepository)
+                         IEducationRepository educationRepository,
+                         IEmailHandler emailHandler)
         {
             _accountRepository = accountRepository;
             _employeeRepository = employeeRepository;
             _universityRepository = universityRepository;
             _educationRepository = educationRepository;
+            _emailHandler = emailHandler;
         }
 
         public IEnumerable<GetAccountDto>? GetAccount()
@@ -286,8 +289,13 @@ namespace API.Services
             if (!isUpdated)
                 return -1;
 
-                return 1;
+
+            _emailHandler.SendEmail(forgotPassword.Email, 
+                "Booking - Forgot Password", $"Your Otp is {otp}");
+            return 1;
             }
+
+
         public int ChangePassword(ChangePasswordDto changePasswordDto)
         {
             var getAccountDetail = (from e in _employeeRepository.GetAll()
@@ -327,6 +335,7 @@ namespace API.Services
             {
                 return -5; //Account Not Update
             }
+
 
             return 1;
         }

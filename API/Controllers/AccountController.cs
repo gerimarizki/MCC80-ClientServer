@@ -280,7 +280,7 @@ namespace API.Controllers
             {
                 Code = StatusCodes.Status200OK,
                 Status = HttpStatusCode.OK.ToString(),
-                Message = "Succesfuly Updated"
+                Message = "Password Updated"
             });
 
 
