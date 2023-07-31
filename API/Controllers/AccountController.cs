@@ -14,6 +14,7 @@ namespace API.Controllers
 {
     [ApiController]
     [Route("api/accounts")]
+    [Authorize]
     public class AccountController : ControllerBase
     {
         private readonly AccountService _service;
@@ -158,6 +159,7 @@ namespace API.Controllers
         }
 
         [HttpPost("login")]
+        [AllowAnonymous]
         public IActionResult Login(LoginDto loginDto)
         {
             var result = _service.Login(loginDto);
@@ -194,6 +196,7 @@ namespace API.Controllers
 
         [Route("register")]
         [HttpPost]
+        [AllowAnonymous]
         public IActionResult Register(RegisterDto register)
         {
             var createdRegister = _service.Register(register);
@@ -217,7 +220,7 @@ namespace API.Controllers
         }
 
         [HttpPost("forgot-password")]
-
+        [AllowAnonymous]
         public IActionResult ForgotPassword(ForgotPasswordOTPDto forgotPasswordDto)
         {
             var isUpdated = _service.ForgotPassword(forgotPasswordDto);
@@ -245,6 +248,7 @@ namespace API.Controllers
             }); 
         }
         [HttpPut("ChangePassword")]
+        [AllowAnonymous]
         public IActionResult UpdatePassword(ChangePasswordDto changePasswordDto)
         {
             var update = _service.ChangePassword(changePasswordDto);
