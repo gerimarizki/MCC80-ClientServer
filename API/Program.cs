@@ -2,6 +2,7 @@ using API.Contracts;
 using API.Data;
 using API.Repositories;
 using API.Services;
+using API.Utilities;
 using API.Utilities.Validations;
 using FluentValidation;
 using FluentValidation.AspNetCore;
@@ -47,6 +48,7 @@ builder.Services.AddScoped<IRoleRepository, RoleRepository>();
 builder.Services.AddScoped<IRoomRepository, RoomRepository>();
 builder.Services.AddScoped<IBookingRepository, BookingRepository>();
 builder.Services.AddScoped<IEmployeeRepository, EmployeeRepository>();
+builder.Services.AddScoped<ITokenHandler, TokenHandler>();
 
 // Add services to the container.
 builder.Services.AddScoped<UniversityService>();
@@ -57,6 +59,16 @@ builder.Services.AddScoped<AccountRoleService>();
 builder.Services.AddScoped<RoleService>();
 builder.Services.AddScoped<RoomService>();
 builder.Services.AddScoped<BookingService>();
+
+builder.Services.AddCors(options =>
+{
+    options.AddDefaultPolicy(policy =>
+    {
+        policy.AllowAnyOrigin();
+        policy.AllowAnyHeader();
+        policy.AllowAnyMethod();
+    });
+});
 
 
 // Add SmtpClient to the container.
@@ -84,6 +96,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseCors();
 
 app.UseAuthorization();
 

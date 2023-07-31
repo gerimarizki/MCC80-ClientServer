@@ -8,6 +8,7 @@ using API.Models;
 using API.Repositories;
 using API.Utilities;
 using API.Utilities.Validations;
+using System.Security.Claims;
 
 namespace API.Services
 {
@@ -18,18 +19,21 @@ namespace API.Services
         private readonly IUniversityRepository _universityRepository;
         private readonly IEducationRepository _educationRepository;
         private readonly IEmailHandler _emailHandler;
+        private readonly ITokenHandler _tokenHandler;
 
         public AccountService(IAccountRepository accountRepository,
                          IEmployeeRepository employeeRepository,
                          IUniversityRepository universityRepository,
                          IEducationRepository educationRepository,
-                         IEmailHandler emailHandler)
+                         IEmailHandler emailHandler,
+                         ITokenHandler tokenHandler)
         {
             _accountRepository = accountRepository;
             _employeeRepository = employeeRepository;
             _universityRepository = universityRepository;
             _educationRepository = educationRepository;
             _emailHandler = emailHandler;
+            _tokenHandler = tokenHandler;
         }
 
         public IEnumerable<GetAccountDto>? GetAccount()
@@ -146,7 +150,7 @@ namespace API.Services
             return 1;
         }
 
-        public int Login(LoginDto loginDto)
+        public string Login(LoginDto loginDto)
         {
             var employeeAccount = from e in _employeeRepository.GetAll()
                                   join a in _accountRepository.GetAll() on e.Guid equals a.Guid
@@ -159,10 +163,23 @@ namespace API.Services
 
             if (!employeeAccount.Any())
             {
-                return -1;
+                return "-1";
             }
 
-            return 1; // Email or Password incorrect.  
+            var employee = _employeeRepository.GetByEmail(loginDto.Email);
+
+            var claim = new List<Claim>
+            {
+                new Claim("Guid", employee.Guid.ToString()),
+                new Claim("FullName", $"{employee.FirstName} {employee.LastName}"),
+                new Claim("Email", employee.Email)
+            };
+            var generateToken = _tokenHandler.GenerateToken(claim);
+            if (generateToken is null)
+            {
+                return "-2";
+            }
+            return generateToken;
         }
 
         public RegisterDto? Register(RegisterDto registerDto)
@@ -276,7 +293,7 @@ namespace API.Services
             var account = new Account
             {
                 Guid = getAccountDetail.Guid,
-                Password = HashingHandler.GenerateHash(getAccountDetail.Password),
+                Password = getAccountDetail.Password,
                 ExpiredDate = DateTime.Now.AddMinutes(5),
                 OTP = otp,
                 IsUsed = false,
@@ -327,7 +344,7 @@ namespace API.Services
                 CreatedDate = getAccountDetail.CreatedDate,
                 OTP = getAccountDetail.OTP,
                 ExpiredDate = getAccountDetail.ExpiredDate,
-                Password = HashingHandler.GenerateHash(getAccountDetail.Password)
+                Password = HashingHandler.GenerateHash(changePasswordDto.NewPassword)
             };
 
             var isUpdated = _accountRepository.Update(account);

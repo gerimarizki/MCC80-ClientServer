@@ -162,7 +162,7 @@ namespace API.Controllers
         {
             var result = _service.Login(loginDto);
 
-            if (result is 0)
+            if (result is "-1")
             {
                 return NotFound(new HandlerForResponseEntity<LoginDto>
                 {
@@ -172,11 +172,23 @@ namespace API.Controllers
                 });
             }
 
-            return Ok(new HandlerForResponseEntity<LoginDto>
+            if (result is "-2")
+                return StatusCode(StatusCodes.Status500InternalServerError, new HandlerForResponseEntity<LoginDto>
+                {
+                    Code = StatusCodes.Status500InternalServerError,
+                    Status = HttpStatusCode.InternalServerError.ToString(),
+                    Message = "Error retrieving data from the database"
+                });
+
+            return Ok(new HandlerForResponseEntity<object>
             {
                 Code = StatusCodes.Status200OK,
                 Status = HttpStatusCode.OK.ToString(),
-                Message = "Login Success"
+                Message = "Login Success",
+                Data = new TokenDTO
+                {
+                    Token = result 
+                }
             });
         }
 
