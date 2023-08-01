@@ -25,20 +25,26 @@ namespace API.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Role>().HasData(new GetRoleDeafultDto
+            modelBuilder.Entity<Role>().HasData(new GetRoleDefaultDto
             {
                 Guid = Guid.Parse("f2d7d3ea-a134-48b7-a21c-08db925d18be"),
-                Name = "Employee"
+                Name = "Employee",
+                CreatedDate = DateTime.Now,
+                ModifiedDate = DateTime.Now,             
             },
-                                           new GetRoleDeafultDto
+                                           new GetRoleDefaultDto
                                            {
                                                Guid = Guid.Parse("e8bcbd16-8894-4ed3-a21d-08db925d18be"),
-                                               Name = "Manager"
+                                               Name = "Manager",
+                                               CreatedDate = DateTime.Now,
+                                               ModifiedDate = DateTime.Now,
                                            },
-                                           new GetRoleDeafultDto
+                                           new GetRoleDefaultDto
                                            {
                                                Guid = Guid.Parse("b58bfc4e-2ffd-4da3-a21e-08db925d18be"),
-                                               Name = "Admin"
+                                               Name = "Admin",
+                                               CreatedDate = DateTime.Now,
+                                               ModifiedDate = DateTime.Now,
                                            });
 
             base.OnModelCreating(modelBuilder);

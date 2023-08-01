@@ -12,7 +12,7 @@ namespace API.Controllers
 {
     [ApiController]
     [Route("api/account-roles")]
-    //[Authorize(Roles = "Employee")]
+    [Authorize(Roles = "Employee")]
     public class AccountRoleController : ControllerBase
     {
         private readonly AccountRoleService _service;

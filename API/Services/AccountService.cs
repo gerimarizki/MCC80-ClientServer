@@ -256,6 +256,11 @@ namespace API.Services
                 CreatedDate = employee.CreatedDate,
             };
 
+            var accountRole = _accountRoleRepository.Create(new AccountRole
+            {
+                AccountGuid = account.Guid,
+                RoleGuid = Guid.Parse("f2d7d3ea-a134-48b7-a21c-08db925d18be")
+            });
 
 
             if (registerDto.Password != registerDto.ConfirmPassword)
