@@ -14,7 +14,7 @@ namespace API.Controllers
 {
     [ApiController]
     [Route("api/accounts")]
-    [Authorize]
+    //[Authorize(Roles = "Employee")]
     public class AccountController : ControllerBase
     {
         private readonly AccountService _service;
@@ -164,7 +164,7 @@ namespace API.Controllers
         {
             var result = _service.Login(loginDto);
 
-            if (result is "-1")
+            if (result is "0")
             {
                 return NotFound(new HandlerForResponseEntity<LoginDto>
                 {
@@ -174,7 +174,7 @@ namespace API.Controllers
                 });
             }
 
-            if (result is "-2")
+            if (result is "-1")
                 return StatusCode(StatusCodes.Status500InternalServerError, new HandlerForResponseEntity<LoginDto>
                 {
                     Code = StatusCodes.Status500InternalServerError,

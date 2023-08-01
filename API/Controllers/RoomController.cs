@@ -3,13 +3,16 @@ using API.DTOs.Rooms;
 using API.Models;
 using API.Services;
 using API.Utilities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Data;
 using System.Net;
 
 namespace API.Controllers
 {
     [ApiController]
     [Route("api/rooms")]
+    //[Authorize(Roles = "Employee")]
     public class RoomController : ControllerBase
     {
         private readonly RoomService _service;

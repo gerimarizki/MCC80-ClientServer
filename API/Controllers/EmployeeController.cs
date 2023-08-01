@@ -3,13 +3,16 @@ using API.DTOs.Employees;
 using API.Models;
 using API.Services;
 using API.Utilities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Data;
 using System.Net;
 
 namespace API.Controllers
 {
     [ApiController]
     [Route("api/employees")]
+    //[Authorize(Roles = "Employee")]
     public class EmployeeController : ControllerBase
     {
         private readonly EmployeeService _service;

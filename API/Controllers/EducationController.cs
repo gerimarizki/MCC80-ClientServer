@@ -4,13 +4,16 @@ using API.Models;
 using API.Repositories;
 using API.Services;
 using API.Utilities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Data;
 using System.Net;
 
 namespace API.Controllers
 {
     [ApiController]
     [Route("api/educations")]
+    //[Authorize(Roles = "Employee")]
     public class EducationController : ControllerBase
     {
         private readonly EducationService _service;
