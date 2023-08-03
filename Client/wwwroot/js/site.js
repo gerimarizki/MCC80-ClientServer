@@ -16,7 +16,7 @@ function ChangeTextAndFont() {
     let tes2 = document.getElementById('tes2');
     let randomIndex = Math.floor(Math.random() * fonts.length);
     tes2.style.fontFamily = fonts[randomIndex];
-    tes2.textContent = "Latihan Ganti Text!!!!";
+    tes2.textContent = "MCC 80 MCC 80 MCC 80";
     tes2.style.fontSize = "30px";
 }
 
@@ -28,7 +28,7 @@ function ChangeBackgroundColorAndText() {
     let randomIndex = Math.floor(Math.random() * fonts.length);
     tes3.style.fontFamily = fonts[randomIndex];
     tes3.style.backgroundColor = "#" + randomColor; 
-    tes3.textContent = "Background and text";
+    tes3.textContent = "MCC 80 MCC 80 MCC 80";
     tes3.style.fontSize = "30px";
 
 }
