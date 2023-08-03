@@ -45,10 +45,12 @@ const animals = [
 
 let cat = [];
 for (let i = 0; i < animals.length; i++) {
-    if (animals[i].class.name == "cat") {
+    if (animals[i].species == "cat") {
         cat.push(animals[i]);
     }
 }
+
+
 
 //fungsi 2: jika species nya 'fish' maka ganti class -> menjadi 'non-mamalia'
 
