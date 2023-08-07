@@ -1,5 +1,6 @@
 ﻿using API.Contracts;
 using API.DTOs.Accounts;
+using API.DTOs.Educations;
 using API.DTOs.Employees;
 using API.Models;
 using API.Utilities;

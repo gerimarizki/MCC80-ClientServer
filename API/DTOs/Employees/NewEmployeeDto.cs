@@ -4,8 +4,6 @@ namespace API.DTOs.Employees
 {
     public class NewEmployeeDto
     {
-        public Guid Guid { get; set; }
-
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public DateTime BirthDate { get; set; }
