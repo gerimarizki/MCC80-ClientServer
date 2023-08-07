@@ -3,7 +3,7 @@
     $(`#mainTable`).DataTable({
 
         ajax: {
-            url: "https://pokeapi.co/api/v2/pokemon/",
+            url: "https://pokeapi.co/api/v2/pokemon?limit=1000",
             dataType: "JSON",
             dataSrc: "results"
 
@@ -53,11 +53,11 @@ function detail(stringURL) {
         });
         $(".pokemon-abilities").html(abilities);
 
-        $("#hp").css("width", res.stats[0].base_stat + "%").html("HP : " + res.stats[0].base_stat);
+        $("#hp").css("width", res.stats[0].base_stat + "%").html("Health Point : " + res.stats[0].base_stat);
         $("#attack").css("width", res.stats[1].base_stat + "%").html("Attack : " + res.stats[1].base_stat);
         $("#defense").css("width", res.stats[2].base_stat + "%").html("Defense : " + res.stats[2].base_stat);
-        $("#sattack").css("width", res.stats[3].base_stat + "%").html("Spesial Attack : " + res.stats[3].base_stat);
-        $("#sdefense").css("width", res.stats[4].base_stat + "%").html("Spesial Defense : " + res.stats[4].base_stat);
+        $("#sattack").css("width", res.stats[3].base_stat + "%").html("Special Attack : " + res.stats[3].base_stat);
+        $("#sdefense").css("width", res.stats[4].base_stat + "%").html("Special Defense : " + res.stats[4].base_stat);
         $("#speed").css("width", res.stats[5].base_stat + "%").html("Speed : " + res.stats[5].base_stat);
         console.log(res);
     })
