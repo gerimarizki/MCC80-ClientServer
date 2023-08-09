@@ -227,7 +227,7 @@ document.addEventListener('DOMContentLoaded', function () {
         let femalePercentage = (femaleCount / totalCount) * 100;
         let malePercentage = (maleCount / totalCount) * 100;
 
-        let chart = Highcharts.chart('Pie-Chart', {
+        let chart = Highcharts.chart('Gender-Chart', {
 
             chart: {
                 type: 'pie'
@@ -255,4 +255,64 @@ document.addEventListener('DOMContentLoaded', function () {
 
     });
 
+});
+$(document).ready(function ageChart() {
+    // Memuat data menggunakan Ajax
+    $.ajax({
+        url: "https://localhost:7124/api/employees/"
+    }).done((result) => {
+        // Process the fetched employee data here
+
+        const currentDate = new Date(); // Current date
+        const ageCounts = {};
+
+        result.data.forEach(employee => {
+            const birthDate = new Date(employee.birthDate);
+            const age = currentDate.getFullYear() - birthDate.getFullYear();
+
+            // Counting the occurrences of each age
+            if (ageCounts[age]) {
+                ageCounts[age]++;
+            } else {
+                ageCounts[age] = 1;
+            }
+        });
+
+        var xValues = Object.keys(ageCounts); // Get unique ages
+        var yValues = Object.values(ageCounts); // Get counts for each age
+        var barColors = "#b91d47";
+
+        new Chart("umur-chart", {
+            type: "bar",
+            data: {
+                labels: xValues,
+                datasets: [{
+                    backgroundColor: barColors,
+                    data: yValues
+                }]
+            },
+            options: {
+                title: {
+                    display: true,
+                    text: "Employee Age Distribution"
+                },
+                scales: {
+                    x: {
+                        title: {
+                            display: true,
+                            text: "Age"
+                        }
+                    },
+                    y: {
+                        title: {
+                            display: true,
+                            text: "Count"
+                        }
+                    }
+                }
+            }
+        });
+    }).fail((xhr, status, error) => {
+        console.error("Error fetching employee data:", error);
+    });
 });
