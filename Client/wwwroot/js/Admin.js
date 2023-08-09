@@ -1,6 +1,13 @@
-﻿$(document).ready(function () {
+﻿// Please see documentation at https://docs.microsoft.com/aspnet/core/client-side/bundling-and-minification
+// for details on configuring this project to bundle and minify static web assets.
 
-    $(`#employeeTable`).DataTable({
+// Write your JavaScript code.
+
+
+
+$(document).ready(function () {
+
+    $(`#myTable`).DataTable({
 
         ajax: {
             url: "https://localhost:7124/api/employees",
@@ -8,76 +15,43 @@
             dataSrc: "data"
 
         },
+
         dom: 'Bfrtip',
         buttons: [
-            {
-                extend: 'colvis',
-                title: 'Colvis',
-                text: 'Column Visibility'
-            },
-            {
-                extend: 'excelHtml5',
-                title: 'Excel',
-                text: 'Export to excel',
-                /*Columns to export*/
-                exportOptions: {
-                    columns: ':visible'
-                }
-            },
-            {
-                extend: 'pdfHtml5',
-                title: 'PDF',
-                text: 'Export to PDF',
-                /*Columns to export*/
-                exportOptions: {
-                    columns: ':visible'
-                }
-            },
-            {
-                extend: 'print',
-                title: 'Print',
-                text: 'Print Table',
-                /*Columns to export*/
-                exportOptions: {
-                    columns: ':visible'
-                }
-            }
+            'copy', 'csv', 'excel', 'pdf', 'print'
         ],
 
-        columns: [
 
+        columns: [
             {
-                data: 'no',
-                render: function (data, type, row, meta) {
+                data: 'url',
+                render: function (data, type, full, meta) {
                     return meta.row + 1;
                 }
             },
-            { data: "nik" },
-
+            { data: 'nik' },
             {
-                data: "fullName",
+                data: 'url',
                 render: function (data, type, row) {
-                    return row.firstName + " " + row.lastName;
+                    return row.firstName + ' ' + row.lastName;
                 }
             },
+            { data: 'birthDate' },
             {
-                data: 'birthDate',
+                data: 'url',
                 render: function (data, type, row) {
-                    return moment(data).format("DD MMMM YYYY");
+                    if (row.gender == 0) {
+                        return "Wanita";
+                    } else {
+                        return "Pria";
+                    }
                 }
             },
-            { data: 'gender' },
+            { data: 'hiringDate' },
+            { data: 'email' },
+            { data: 'phoneNumber' },
             {
-                data: 'hiringDate',
-                render: function (data, type, row) {
-                    return moment(data).format("DD MMMM YYYY");
-                }
-            },
-            { data: "email" },
-            { data: "phoneNumber" },
-
-            {
-                data: null,
+                data: '',
                 render: function (data, type, row) {
                     return `<button onclick="ShowUpdate('${row.guid}')" data-bs-toggle="modal" data-bs-target="#modalUpdateEmployee" class="btn btn-primary"> Update </button>` +
                         `   <button onclick="deleteEmployee('${row.guid}')" class="btn btn-secondary"> Delete </button>`;
@@ -86,25 +60,31 @@
         ]
     });
 });
-function addEmployee() {
 
-    let data = {
-        firstName: $("#firstName").val(),
-        lastName: $("#lastName").val(),
-        birthDate: $("#birthDate").val(),
-        gender: parseInt($("#gender").val()),
-        hiringDate: $("#hiringDate").val(),
-        email: $("#email").val(),
-        phoneNumber: $("#phoneNumber").val(),
-    };
-
+function Insert() {
+    var obj = new Object(); //sesuaikan sendiri nama objectnya dan beserta isinya
+    //ini ngambil value dari tiap inputan di form nya
+    obj.firstName = $("#firstName").val();
+    obj.lastName = $("#lastName").val();
+    obj.birthDate = $("#birthDate").val();
+    obj.gender = parseInt($("#gender").val());
+    obj.hiringDate = $("#hiringDate").val();
+    obj.email = $("#email").val();
+    obj.phoneNumber = $("#phoneNumber").val();
+    //isi dari object kalian buat sesuai dengan bentuk object yang akan di post
     $.ajax({
+        /*url : "https://localhost:7124/api/employees",
+        type: "POST",
+        headers: {
+            'Content-Type':'application/json'
+        },
+        data: obj*/
         url: "https://localhost:7124/api/employees",
         type: "POST",
         headers: {
             'Content-Type': 'application/json'
         },
-        data: JSON.stringify(data),
+        data: JSON.stringify(obj)
     }).done((result) => {
         Swal.fire
             (
@@ -120,8 +100,9 @@ function addEmployee() {
             text: 'Failed to insert data, Please Try Again',
         })
     })
-
 }
+
+
 
 
 function deleteEmployee(Guid) {
@@ -204,7 +185,7 @@ function UpdateEmployee() {
         contentType: "application/json",
         data: JSON.stringify(data)
     }).done((result) => {
-        Swal.fire(  
+        Swal.fire(
             'Data has been successfully updated!',
             'success'
         ).then(() => {
@@ -219,3 +200,59 @@ function UpdateEmployee() {
         console.log(error)
     })
 }
+
+
+document.addEventListener('DOMContentLoaded', function () {
+    // Mendapatkan data dari API
+    $.ajax({
+        url: "https://localhost:7124/api/employees", // Sesuaikan URL sesuai dengan endpoint API Anda
+        type: "GET",
+        dataType: "json"
+    }).done(res => {
+        //Mendapatkan jumlah jenis kelamin
+        let femaleCount = 0;
+        let maleCount = 0;
+        for (let i = 0; i < res.data.length; i++) {
+            if (res.data[i].gender === 0) {
+                femaleCount++;
+            } else if (res.data[i].gender === 1) {
+                maleCount++;
+            }
+        }
+
+        //Menghitung total data
+        let totalCount = femaleCount + maleCount;
+
+        //Menghitung persentase jenis kelamin
+        let femalePercentage = (femaleCount / totalCount) * 100;
+        let malePercentage = (maleCount / totalCount) * 100;
+
+        let chart = Highcharts.chart('Pie-Chart', {
+
+            chart: {
+                type: 'pie'
+            },
+
+            title:
+            {
+                text: 'Employee Gender Distribitution 2023',
+                align: 'left'
+            },
+
+            series: [{
+                name: 'Gender',
+                data: [{
+                    name: 'Male',
+                    y: malePercentage
+                },
+                {
+                    name: 'Female',
+                    y: femalePercentage
+
+                }]
+            }]
+        });
+
+    });
+
+});
