@@ -61,6 +61,23 @@ $(document).ready(function () {
     });
 });
 
+
+$(document).ready(function () {
+    $('#employeeTable').DataTable({
+        dom: 'Bfrtip',
+        buttons: ['colvis',
+            { extend: 'copy', exportOptions: { columns: ':visible' } },
+            { extend: 'csv', exportOptions: { columns: ':visible' } },
+            { extend: 'excel', exportOptions: { columns: ':visible' } },
+            { extend: 'pdf', exportOptions: { columns: ':visible' } },
+            { extend: 'print', exportOptions: { columns: ':visible' } }
+        ]
+    });
+});
+
+
+
+
 function Insert() {
     var obj = new Object(); //sesuaikan sendiri nama objectnya dan beserta isinya
     //ini ngambil value dari tiap inputan di form nya

@@ -1,4 +1,4 @@
-﻿using API.DTOs.Login;
+﻿using API.DTOs.Accounts;
 using FluentValidation;
 
 namespace API.Utilities.Validations.Login

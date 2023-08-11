@@ -1,5 +1,5 @@
 ﻿using API.Contracts;
-using API.DTOs.Register;
+using API.DTOs.Accounts;
 using API.Repositories;
 using FluentValidation;
 using Microsoft.Win32;

@@ -1,8 +1,6 @@
-﻿
+﻿using System.ComponentModel.DataAnnotations;
 
-using System.ComponentModel.DataAnnotations;
-
-namespace API.DTOs.Login
+namespace API.DTOs.Accounts
 {
     public class LoginDto
     {

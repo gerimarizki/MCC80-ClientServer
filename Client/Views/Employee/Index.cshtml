@@ -1,15 +1,16 @@
 ﻿@model IEnumerable<API.Models.Employee>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Employee";
+    Layout = "LayoutAdmin";
 }
 
-<h1>Index</h1>
+<h1>Employee List</h1>
 
 <p>
     <a href="Employee/Create" class ="btn btn-primary">Add Employee</a>
 </p>
-<table class="table">
+<table class="table" id="employeeTable">
     <thead>
         <tr>
             <th>
@@ -36,16 +37,7 @@
             <th>
                 @Html.DisplayNameFor(model => model.PhoneNumber)
             </th>
-    @*        <th>
-                @Html.DisplayNameFor(model => model.Guid)
-            </th>*@
-           @* <th>
-                @Html.DisplayNameFor(model => model.CreatedDate)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.ModifiedDate)
-            </th>
-            <th></th>*@
+            <th></th>
         </tr>
     </thead>
     <tbody>
@@ -75,24 +67,15 @@
             <td>
                 @Html.DisplayFor(modelItem => item.PhoneNumber)
             </td>
-    @*        <td>
-                @Html.DisplayFor(modelItem => item.Guid)
-            </td>*@
-    @*        <td>
-                @Html.DisplayFor(modelItem => item.CreatedDate)
-            </td>
             <td>
-                @Html.DisplayFor(modelItem => item.ModifiedDate)
-            </td>*@
-            <td>
-                    <form action="/Employee/Edit" method="get">
-                            <input type="hidden" value="@item.Guid" name="guid" />
-                            <input type="submit" value="Edit" class="btn btn-primary d-inline" onclick="return true" />
-                     </form>
-                     <form action="/Employee/Delete" method="post" onsubmit="return confirm('Apakah Anda Yakin Ingin menghapus data ini?')">
-                        <input type="hidden" value="@item.Guid" name="guid"/>
-                        <input type="submit" value="Delete" class="btn btn-danger" onclick="return true"/>
-                     </form>
+                 <form action="/Employee/Edit" method="get">
+                        <input type="hidden" value="@item.Guid" name="guid" />
+                        <input type="submit" value="Edit" class="btn btn-primary d-inline" onclick="return true" />
+                 </form>
+                 <form action="/Employee/Delete" method="post" onsubmit="return confirm('Apakah Anda Yakin Ingin menghapus data ini?')">
+                    <input type="hidden" value="@item.Guid" name="guid"/>
+                    <input type="submit" value="Delete" class="btn btn-danger" onclick="return true"/>
+                 </form>
             </td>
         </tr>
 }

@@ -3,9 +3,11 @@ using API.DTOs.Employees;
 using Client.Contracts;
 using Microsoft.AspNetCore.Mvc;
 using NuGet.Protocol.Core.Types;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Client.Controllers
 {
+    [Authorize]
     public class EmployeeController : Controller
     {
         private readonly IEmployeeRepository repository;
@@ -73,7 +75,7 @@ namespace Client.Controllers
         {
             var result = await repository.Get(guid);
 
-            var employeeDto = new GetEmployeeDto
+            var employeeDto = new UpdateEmployeeDto
             {
                 Guid = result.Data.Guid,
                 NIK = result.Data.NIK,

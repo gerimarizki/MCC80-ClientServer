@@ -1,13 +1,11 @@
 ﻿using API.Contracts;
 using API.DTOs.Accounts;
 using API.DTOs.AccountRoles;
-using API.DTOs.Login;
 using API.Models;
 using API.Services;
 using API.Utilities;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
-using API.DTOs.Register;
 using Microsoft.AspNetCore.Authorization;
 
 namespace API.Controllers

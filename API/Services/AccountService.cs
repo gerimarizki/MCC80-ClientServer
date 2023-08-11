@@ -3,8 +3,6 @@ using API.DTOs.AccountRoles;
 using API.DTOs.Accounts;
 using API.DTOs.Educations;
 using API.DTOs.Employees;
-using API.DTOs.Login;
-using API.DTOs.Register;
 using API.DTOs.Roles;
 using API.Models;
 using API.Repositories;

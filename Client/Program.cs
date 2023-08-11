@@ -1,11 +1,38 @@
 using Client.Contracts;
 using Client.Repositories;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 builder.Services.AddScoped<IEmployeeRepository, EmployeeRepository>();
+builder.Services.AddScoped<IAccountRepository, AccountRepository>();
+builder.Services.AddSession();
+builder.Services.AddHttpContextAccessor();
+
+// Jwt Configuration
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+       .AddJwtBearer(options =>
+       {
+           options.RequireHttpsMetadata = false;
+           options.SaveToken = true;
+           options.TokenValidationParameters = new TokenValidationParameters
+           {
+               ValidateIssuerSigningKey = true,
+               IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(builder.Configuration["JWTConfig:Key"])),
+               ValidateIssuer = false,
+               //Usually, this is your application base URL
+               //ValidIssuer = configuration["JWTConfig:Issuer"],
+               ValidateAudience = false,
+               //If the JWT is created using a web service, then this would be the consumer URL.
+               //ValidAudience = configuration["JWTConfig:Audience"],
+               ValidateLifetime = true,
+               ClockSkew = TimeSpan.Zero
+           };
+       });
 
 
 var app = builder.Build();
@@ -23,10 +50,26 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
+app.UseSession();
+
+
+//Add JWToken to all incoming HTTP Request Header
+app.Use(async (context, next) =>
+{
+    var JWToken = context.Session.GetString("JWToken");
+    if (!string.IsNullOrEmpty(JWToken))
+    {
+        context.Request.Headers.Add("Authorization", "Bearer " + JWToken);
+    }
+    await next();
+});
+
+app.UseAuthentication();
+
 app.UseAuthorization();
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
+     pattern: "{controller=Account}/{action=Login}/{id?}");
 
 app.Run();
