@@ -1,14 +1,13 @@
 ﻿using Client.Models;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Client.Controllers
 {
     [Authorize]
     public class HomeController : Controller
     {
-
         private readonly ILogger<HomeController> _logger;
 
         public HomeController(ILogger<HomeController> logger)
@@ -20,6 +19,28 @@ namespace Client.Controllers
         {
             return View();
         }
+
+        [AllowAnonymous]
+        [HttpGet("/Unauthorized")]
+        public IActionResult Unauthorized()
+        {
+            return View();
+        }
+
+        [AllowAnonymous]
+        [Route("/NotFound")]
+        public IActionResult Notfound()
+        {
+            return View();
+        }
+
+        [AllowAnonymous]
+        [Route("/Forbidden")]
+        public IActionResult Forbidden()
+        {
+            return View();
+        }
+
 
         public IActionResult Privacy()
         {
